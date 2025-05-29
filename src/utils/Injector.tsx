@@ -1,6 +1,6 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-
+import '../index.css';
 export function Injector({
   id = 'promptaid-embed',
   selector = 'body', // Use selector directly from browser's Inspect -> Copy selector

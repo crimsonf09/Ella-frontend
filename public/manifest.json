@@ -2,15 +2,6 @@
   "manifest_version": 3,
   "name": "PromptAid",
   "version": "2.0",
-  "action": {
-    "default_popup": "index.html",
-    "default_icon": {
-      "32": "icon.png"
-    }
-  },
-  "icons": {
-    "32": "icon.png"
-  },
   "permissions": [
     "scripting",
     "tabs",
@@ -19,6 +10,9 @@
   "host_permissions": [
     "https://dacasia-chat.hakuneo.com/*"
   ],
+  "icons": {
+    "32": "icon.png"
+  },
   "content_scripts": [
     {
       "matches": [
@@ -29,5 +23,10 @@
       ],
       "run_at": "document_idle"
     }
-  ]
+  ],
+  "action": {
+    "default_icon": {
+      "32": "icon.png"
+    }
+  }
 }

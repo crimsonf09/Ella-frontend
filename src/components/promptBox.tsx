@@ -1,71 +1,163 @@
 // promptBox.tsx
-import React, { useState } from "react";
-import  { createRoot, type Root } from "react-dom/client";
+import React, { useState, useEffect } from "react";
+import { createRoot, type Root } from "react-dom/client";
+import tailwindStyles from './promptBox.css?inline';
+import SettingsModal from './SettingsModal';
+import { generatePrompt } from '.././utils/GeneratePrompt';
+
 
 const PromptBox: React.FC = () => {
-  return (
-    // <div className="relative flex flex-grow flex-col rounded-xl border border-black/10 bg-white shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:border-gray-900/50 dark:bg-[#40414F] dark:text-white dark:shadow-[0_0_15px_rgba(0,0,0,0.10)]">
-    //   <div className="relative flex items-center">
-    //     <textarea
-    //       className="w-full resize-none border-0 rounded bg-transparent py-3 px-4 text-black dark:bg-transparent dark:text-white dark:placeholder-gray-500 truncate focus:outline-none whitespace-pre-wrap max-h-[150px]"
-    //       id="chat-input"
-    //       placeholder="promptAid . . ."
-    //       rows={1}
-    //       style={{ overflow: 'auto', height: 'auto', bottom: '64px' }}
-    //     ></textarea>
-    //   </div>
+  const [promptAidMessage, setPromptAidMessage] = useState<string>("");
+  const [promptAidUserMessages, setPromptAidUserMessages] = useState<string>("");
+  const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
+  const [isThinking, setIsThinking] = useState<boolean>(false);
 
-    //   <div
-    //     className="absolute right-2 bottom-2 rounded-sm p-1 text-neutral-800 opacity-60 dark:bg-opacity-50 dark:text-neutral-100 focus:outline focus:outline-1 dark:focus:outline-white hover:bg-neutral-200 hover:text-neutral-900 dark:hover:text-neutral-200"
-    //     onClick={() => { console.log("senddddd") }}
-    //   >
-    //     <svg
-    //       xmlns="http://www.w3.org/2000/svg"
-    //       width="18"
-    //       height="18"
-    //       viewBox="0 0 24 24"
-    //       fill="none"
-    //       stroke="currentColor"
-    //       strokeWidth="2"
-    //       strokeLinecap="round"
-    //       strokeLinejoin="round"
-    //       className="tabler-icon tabler-icon-send"
-    //     >
-    //       <path d="M10 14l11 -11"></path>
-    //       <path d="M21 3l-6.5 18a.55 .55 0 0 1 -1 0l-3.5 -7l-7 -3.5a.55 .55 0 0 1 0 -1l18 -6.5"></path>
-    //     </svg>
-    //   </div>
-    // </div>
-    <div>
-      x
-    </div>
+  const sendPromptMessage = () => {
+    console.log("Send prompt message");
+    const box = document.getElementById("chat-input") as HTMLTextAreaElement | null;
+    if (box) {
+      box.value = promptAidUserMessages;
+      box.dispatchEvent(new Event("input", { bubbles: true })); // Trigger input event to notify React
+      box.focus();
+      const sendButton = document.querySelector(
+        '#__next > div > div.w-screen.h-screen.flex.overflow-hidden.light > main > div.relative.flex.flex-col.w-full.h-screen.justify-between.bg-white.dark\\:bg-\\[\\#343541\\].overflow-y-auto.overflow-x-hidden > div.flex.flex-col.justify-end.w-full.lg\\:px-6.md\\:px-4.px-4.bg-gradient-to-b.from-transparent.via-white.to-white.dark\\:border-white\\/20.dark\\:via-\\[\\#343541\\].dark\\:to-\\[\\#343541\\].absolute.bottom-0 > div > div > div.relative.flex.flex-grow.flex-col.rounded-xl.border.border-black\\/10.bg-white.shadow-\\[0_0_10px_rgba\\(0\\,0\\,0\\,0\\.10\\)\\].dark\\:border-gray-900\\/50.dark\\:bg-\\[\\#40414F\\].dark\\:text-white.dark\\:shadow-\\[0_0_15px_rgba\\(0\\,0\\,0\\,0\\.10\\)\\] > div.absolute.right-2.bottom-2.rounded-sm.p-1.text-neutral-800.opacity-60.dark\\:bg-opacity-50.dark\\:text-neutral-100.focus\\:outline.focus\\:outline-1.dark\\:focus\\:outline-white.hover\\:bg-neutral-200.hover\\:text-neutral-900.dark\\:hover\\:text-neutral-200 > svg'
+      );
+
+      if (sendButton) {
+        (sendButton as SVGElement).dispatchEvent(new MouseEvent('click', { bubbles: true }));
+        console.log("Button clicked!");
+        setPromptAidUserMessages("");
+        setPromptAidMessage("");
+      } else {
+        console.log("Button not found");
+      }
+    } else {
+      console.log("box not found");
+    }
+  }
+
+  const toggleSettingsModal = () => {
+    setIsSettingsOpen(!isSettingsOpen);
+  };
+  const clickedGeneratePrompt = async () => {
+    setIsThinking(true);
+    const res = await generatePrompt();
+    setIsThinking(false);
+    setPromptAidMessage(res);
+    setPromptAidUserMessages(res);
+    console.log("rressss");
+    console.log(res);
+  }
+  useEffect(() => {
+    // Function to mount the SettingsModal directly into the body
+    const mountSettingsModal = () => {
+      const modalRoot = document.createElement('div');
+      modalRoot.id = 'settings-modal-root';
+      document.body.appendChild(modalRoot);
+
+      const modalRootElement = document.getElementById('settings-modal-root');
+      if (modalRootElement) {
+        const modalRoot = createRoot(modalRootElement);
+        modalRoot.render(<SettingsModal isOpen={isSettingsOpen} onClose={toggleSettingsModal} />);
+      }
+    };
+
+    // Function to unmount the SettingsModal and remove the root element
+    const unmountSettingsModal = () => {
+      const modalRootElement = document.getElementById('settings-modal-root');
+      if (modalRootElement) {
+        const modalRoot = createRoot(modalRootElement);
+        modalRoot.unmount();
+        document.body.removeChild(modalRootElement);
+      }
+    };
+
+    // Mount the SettingsModal when the component mounts
+    mountSettingsModal();
+
+    // Unmount the SettingsModal when the component unmounts
+    return () => {
+      unmountSettingsModal();
+    };
+  }, [isSettingsOpen]);
+
+  return (
+    <div className="h-[130px] relative flex p-2 flex-col rounded-xl border-black/10 bg-white shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:border-gray-900/50 dark:bg-[#40414F] dark:text-white dark:shadow-[0_0_15px_rgba(0,0,0,0.10)]">
+      <div className="w-full max-h-full flex items-start overflow-y-scroll h-max scroll-m-1">
+        <textarea
+          className="w-full min-h-[100px] rounded bg-transparent flex text-black dark:bg-transparent dark:text-white dark:placeholder-gray-500 truncate focus:outline-none whitespace-pre-wrap resize-none"
+          id="chat-input"
+          placeholder={!isThinking ? "Ella" : "Ella . . ."}
+          value={promptAidUserMessages}
+          style={{ overflow: 'auto' }}
+          rows={1}
+          onChange={(e) => setPromptAidUserMessages(e.target.value)}
+        ></textarea>
+      </div>
+
+      <div
+        className="absolute flex right-2 gap-2 bottom-2 rounded-sm p-1 text-neutral-800 opacity-60 dark:bg-opacity-50 dark:text-neutral-100 focus:outline dark:focus:outline-white "
+      >
+        <div
+          className="hover:bg-neutral-200 hover:text-neutral-900 dark:hover:text-neutral-200 w-fit h-fit cursor-pointer rounded-full p-1"
+          onClick={clickedGeneratePrompt}
+        >
+          <svg fill="#D1D5DB" width="18px" height="18px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+
+            <title />
+
+            <g data-name="Layer 2" id="Layer_2">
+
+              <path d="M18,11a1,1,0,0,1-1,1,5,5,0,0,0-5,5,1,1,0,0,1-2,0,5,5,0,0,0-5-5,1,1,0,0,1,0-2,5,5,0,0,0,5-5,1,1,0,0,1,2,0,5,5,0,0,0,5,5A1,1,0,0,1,18,11Z" />
+
+              <path d="M19,24a1,1,0,0,1-1,1,2,2,0,0,0-2,2,1,1,0,0,1-2,0,2,2,0,0,0-2-2,1,1,0,0,1,0-2,2,2,0,0,0,2-2,1,1,0,0,1,2,0,2,2,0,0,0,2,2A1,1,0,0,1,19,24Z" />
+
+              <path d="M28,17a1,1,0,0,1-1,1,4,4,0,0,0-4,4,1,1,0,0,1-2,0,4,4,0,0,0-4-4,1,1,0,0,1,0-2,4,4,0,0,0,4-4,1,1,0,0,1,2,0,4,4,0,0,0,4,4A1,1,0,0,1,28,17Z" />
+
+            </g>
+
+          </svg>
+        </div>
+        <div
+          className="hover:bg-neutral-200 hover:text-neutral-900 dark:hover:text-neutral-200 w-fit h-fit cursor-pointer rounded-full p-1"
+          onClick={toggleSettingsModal}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            viewBox="0 0 18 18"
+            fill="currentColor"
+            className="text-gray-500 dark:text-gray-400"
+          >
+            <path d="M12.66 6.38L14.48 5.99L15 7.26L13.44 8.27A4.5 4.5 0 0 1 13.44 9.73L13.44 9.73L15 10.74L14.48 12.01L12.66 11.62A4.5 4.5 0 0 1 11.62 12.66L11.62 12.66L12.01 14.48L10.74 15L9.73 13.44A4.5 4.5 0 0 1 8.27 13.44L8.27 13.44L7.26 15L5.99 14.48L6.38 12.66A4.5 4.5 0 0 1 5.34 11.62L5.34 11.62L3.52 12.01L3 10.74L4.56 9.73A4.5 4.5 0 0 1 4.56 8.27L4.56 8.27L3 7.26L3.52 5.99L5.34 6.38A4.5 4.5 0 0 1 6.38 5.34L6.38 5.34L5.99 3.52L7.26 3L8.27 4.56A4.5 4.5 0 0 1 9.73 4.56L9.73 4.56L10.74 3L12.01 3.52L11.62 5.34A4.5 4.5 0 0 1 12.66 6.38ZM11.5 9a2.5 2.5 0 0 0 -5 -0a2.5 2.5 0 0 0 5 -0Z" />
+          </svg>
+        </div>
+
+        <div
+          onClick={() => { sendPromptMessage(); }}
+          className="hover:bg-neutral-200 hover:text-neutral-900 dark:hover:text-neutral-200 w-fit h-fit cursor-pointer rounded-full p-1"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            width="18"
+            height="18"
+            fill="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="tabler-icon tabler-icon-send text-gray-500 dark:text-gray-400"
+          >
+            <path d="M10 14l11 -11" stroke="none" />
+            <path d="M21 3l-6.5 18a.55 .55 0 0 1 -1 0l-3.5 -7l-7 -3.5a.55 .55 0 0 1 0 -1l18 -6.5" stroke="none" />
+          </svg>
+        </div>
+      </div>
+    </div >
   );
 };
 export { PromptBox };
-
-
-const PromptBoxWrapper = () => {
-  const [expanded, setExpanded] = useState(false);
-  return (
-    <div>
-      <button
-        onClick={() => setExpanded(true)}
-        className="mb-4 px-4 py-2 bg-blue-600 text-white rounded"
-      >
-        Change Class & Inject PromptBox
-      </button>
-      <div
-        className={
-          expanded
-            ? "stretch flex flex-col gap-3 lg:mx-auto lg:max-w-3xl mt-[40px]"
-            : "stretch flex flex-row gap-3 lg:mx-auto lg:max-w-3xl mt-[40px]"
-        }
-      >
-        {expanded && <PromptBox />}
-      </div>
-    </div>
-  );
-};
 
 let reactRoot: Root | null = null;
 let shadowHost: HTMLElement | null = null;
@@ -92,7 +184,9 @@ function mountPromptBox() {
   }
 
   const shadowRoot = shadowHost.shadowRoot ?? shadowHost.attachShadow({ mode: "open" });
-
+  const style = document.createElement("style");
+  style.textContent = tailwindStyles;
+  shadowRoot.appendChild(style);
   let mountNode = shadowRoot.querySelector("#react-root-container");
   if (!mountNode) {
     mountNode = document.createElement("div");
@@ -101,7 +195,7 @@ function mountPromptBox() {
   }
 
   reactRoot = createRoot(mountNode);
-  reactRoot.render(<PromptBoxWrapper />);
+  reactRoot.render(<PromptBox />);
 }
 
 function unmountPromptBox() {
@@ -116,7 +210,6 @@ function unmountPromptBox() {
 }
 
 // Retry logic using MutationObserver instead of setInterval
-
 function waitForParentAndMount() {
   const containerSelector = `#__next > div > div.w-screen.h-screen.flex.overflow-hidden.light > main > div > div.flex.flex-col.justify-end.w-full.lg\\:px-6.md\\:px-4.px-4.bg-gradient-to-b.from-transparent.via-white.to-white.dark\\:border-white\\/20.dark\\:via-\\[\\#343541\\].dark\\:to-\\[\\#343541\\].absolute.bottom-0 > div > div.stretch.flex.flex-row.gap-3.lg\\:mx-auto.lg\\:max-w-3xl.mt-\\[40px\\]`;
 
