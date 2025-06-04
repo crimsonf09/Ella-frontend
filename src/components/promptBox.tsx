@@ -82,8 +82,8 @@ const PromptBox: React.FC = () => {
   }, [isSettingsOpen]);
 
   return (
-    <div className="h-[130px] relative flex p-2 flex-col rounded-xl border-black/10 bg-white shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:border-gray-900/50 dark:bg-[#40414F] dark:text-white dark:shadow-[0_0_15px_rgba(0,0,0,0.10)]">
-      <div className="w-full max-h-full flex items-start overflow-y-scroll h-max scroll-m-1">
+    <div className="h-[130px] relative flex p-3 flex-col rounded-xl border-black/10 bg-white shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:border-gray-900/50 dark:bg-[#40414F] dark:text-white dark:shadow-[0_0_15px_rgba(0,0,0,0.10)]">
+      <div className="w-full max-h-full flex items-start h-max">
         <textarea
           className="w-full min-h-[100px] rounded bg-transparent flex text-black dark:bg-transparent dark:text-white dark:placeholder-gray-500 truncate focus:outline-none whitespace-pre-wrap resize-none"
           id="chat-input"

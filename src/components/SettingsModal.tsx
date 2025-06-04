@@ -8,13 +8,10 @@ interface SettingsModalProps {
 const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
     const [text, setText] = useState('');
 
-    // Load text from localStorage on first mount
     useEffect(() => {
         const savedText = localStorage.getItem('settingsText') || '';
         setText(savedText);
     }, []);
-
-    // Disable body scroll when modal is open
     useEffect(() => {
         document.body.style.overflow = isOpen ? 'hidden' : 'auto';
         return () => {
@@ -23,12 +20,12 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
     }, [isOpen]);
 
     const handleClose = () => {
-        localStorage.setItem('settingsText', text); // Save on close
+        localStorage.setItem('settingsText', text);
         onClose();
     };
 
     const handleSave = () => {
-        localStorage.setItem('settingsText', text); // Save manually
+        localStorage.setItem('settingsText', text);
     };
 
     if (!isOpen) return null;

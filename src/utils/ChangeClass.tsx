@@ -1,7 +1,7 @@
 export interface ChangeClassProps {
-    name: string; // Descriptive name of the element (for logging/debugging purposes)
-    selector: string; // Full CSS selector copied directly from Chrome DevTools
-    changedClassName: string; // New class name(s) to apply to the element
+    name: string; 
+    selector: string; 
+    changedClassName: string; 
 }
 
 /**
