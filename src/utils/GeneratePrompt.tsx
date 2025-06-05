@@ -33,7 +33,7 @@ export const generatePrompt = async () => {
     };
 
     // Send to backend
-    const response = await fetch('https://ellapromptaid.onrender.com/generate', {
+    const response = await fetch('http://localhost:3000/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
