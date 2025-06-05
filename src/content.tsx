@@ -1,6 +1,9 @@
 // content.tsx
 import type { ChangeClassProps } from "./utils/ChangeClass";
 import ChangeClass from "./utils/ChangeClass";
+import { createRoot, type Root } from "react-dom/client";
+import PromptBox from "./components/promptBox"; // Your actual component
+import tailwindStyles from "./App.css?inline"; // Raw text import of Tailwind
 
 // 1. Change target class using classList.contains (not selector string)
 const initialize = () => {
@@ -49,3 +52,72 @@ const interval = setInterval(() => {
     initialize();
   }
 }, 500);
+
+// 4.injection
+// content-script.tsx (or wherever you run this)
+
+let reactRoot: Root | null = null;
+let shadowHost: HTMLElement | null = null;
+
+const containerSelector =
+  "main div.flex.flex-col.justify-end.w-full.lg\\:px-6.md\\:px-4.px-4.bg-gradient-to-b.from-transparent.via-white.to-white.dark\\:border-white\\/20.dark\\:via-\\[\\#343541\\].dark\\:to-\\[\\#343541\\].absolute.bottom-0 > div > div.stretch.flex.flex-row.gap-3.lg\\:mx-auto.lg\\:max-w-3xl.mt-\\[40px\\]";
+
+function mountPromptBox() {
+  if (reactRoot) return;
+
+  const parent = document.querySelector(containerSelector);
+  if (!parent) {
+    console.warn("Target container not found.");
+    return;
+  }
+
+  shadowHost = document.createElement("div");
+  shadowHost.id = "prompt-box-root";
+  parent.appendChild(shadowHost);
+
+  const shadowRoot = shadowHost.attachShadow({ mode: "open" });
+
+  const styleTag = document.createElement("style");
+  styleTag.textContent = tailwindStyles;
+  shadowRoot.appendChild(styleTag);
+
+  const container = document.createElement("div");
+  container.id = "react-root-container";
+  shadowRoot.appendChild(container);
+
+  reactRoot = createRoot(container);
+  reactRoot.render(<PromptBox />);
+}
+
+function unmountPromptBox() {
+  if (reactRoot) {
+    reactRoot.unmount();
+    reactRoot = null;
+  }
+  if (shadowHost?.parentElement) {
+    shadowHost.parentElement.removeChild(shadowHost);
+    shadowHost = null;
+  }
+}
+
+function waitForContainerAndMount() {
+  const observer = new MutationObserver(() => {
+    const target = document.querySelector(containerSelector);
+    if (target) {
+      observer.disconnect();
+      mountPromptBox();
+    }
+  });
+
+  observer.observe(document.body, { childList: true, subtree: true });
+
+  // Fallback: also try immediately in case it's already there
+  if (document.querySelector(containerSelector)) {
+    mountPromptBox();
+  }
+}
+
+// INIT
+waitForContainerAndMount();
+window.addEventListener("beforeunload", unmountPromptBox);
+

@@ -6,7 +6,7 @@ import SettingsModal from './SettingsModal';
 import { generatePrompt } from '.././utils/GeneratePrompt';
 
 
-const PromptBox: React.FC = () => {
+export default function PromptBox () {
   const [promptAidMessage, setPromptAidMessage] = useState<string>("");
   const [promptAidUserMessages, setPromptAidUserMessages] = useState<string>("");
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
@@ -157,81 +157,3 @@ const PromptBox: React.FC = () => {
     </div >
   );
 };
-export { PromptBox };
-
-let reactRoot: Root | null = null;
-let shadowHost: HTMLElement | null = null;
-
-function mountPromptBox() {
-  if (reactRoot) {
-    // Already mounted
-    return;
-  }
-
-  const containerSelector = `#__next > div > div.w-screen.h-screen.flex.overflow-hidden.light > main > div > div.flex.flex-col.justify-end.w-full.lg\\:px-6.md\\:px-4.px-4.bg-gradient-to-b.from-transparent.via-white.to-white.dark\\:border-white\\/20.dark\\:via-\\[\\#343541\\].dark\\:to-\\[\\#343541\\].absolute.bottom-0 > div > div.stretch.flex.flex-row.gap-3.lg\\:mx-auto.lg\\:max-w-3xl.mt-\\[40px\\]`;
-
-  const parent = document.querySelector(containerSelector);
-  if (!parent) {
-    console.warn("Mount parent container not found, will retry");
-    return;
-  }
-
-  // Create container div if not exist
-  if (!shadowHost) {
-    shadowHost = document.createElement("div");
-    shadowHost.id = "prompt-box-root";
-    parent.appendChild(shadowHost);
-  }
-
-  const shadowRoot = shadowHost.shadowRoot ?? shadowHost.attachShadow({ mode: "open" });
-  const style = document.createElement("style");
-  style.textContent = tailwindStyles;
-  shadowRoot.appendChild(style);
-  let mountNode = shadowRoot.querySelector("#react-root-container");
-  if (!mountNode) {
-    mountNode = document.createElement("div");
-    mountNode.id = "react-root-container";
-    shadowRoot.appendChild(mountNode);
-  }
-
-  reactRoot = createRoot(mountNode);
-  reactRoot.render(<PromptBox />);
-}
-
-function unmountPromptBox() {
-  if (reactRoot) {
-    reactRoot.unmount();
-    reactRoot = null;
-  }
-  if (shadowHost && shadowHost.parentElement) {
-    shadowHost.parentElement.removeChild(shadowHost);
-    shadowHost = null;
-  }
-}
-
-// Retry logic using MutationObserver instead of setInterval
-function waitForParentAndMount() {
-  const containerSelector = `#__next > div > div.w-screen.h-screen.flex.overflow-hidden.light > main > div > div.flex.flex-col.justify-end.w-full.lg\\:px-6.md\\:px-4.px-4.bg-gradient-to-b.from-transparent.via-white.to-white.dark\\:border-white\\/20.dark\\:via-\\[\\#343541\\].dark\\:to-\\[\\#343541\\].absolute.bottom-0 > div > div.stretch.flex.flex-row.gap-3.lg\\:mx-auto.lg\\:max-w-3xl.mt-\\[40px\\]`;
-
-  const tryMount = () => {
-    const parent = document.querySelector(containerSelector);
-    if (parent) {
-      mountPromptBox();
-      observer.disconnect();
-    }
-  };
-
-  const observer = new MutationObserver(tryMount);
-  observer.observe(document.body, { childList: true, subtree: true });
-
-  // Try immediately once
-  tryMount();
-}
-
-// Call this once on content script load or extension page load
-waitForParentAndMount();
-
-// Optionally listen to unload to clean up
-window.addEventListener("beforeunload", () => {
-  unmountPromptBox();
-});
