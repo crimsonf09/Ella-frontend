@@ -4,7 +4,10 @@ import ChangeClass from "./utils/ChangeClass";
 import { createRoot, type Root } from "react-dom/client";
 import PromptBox from "./components/promptBox"; // Your actual component
 import tailwindStyles from "./App.css?inline"; // Raw text import of Tailwind
-
+import SettingsModal from "./components/SettingsModal";
+import { useState } from "react";
+import './index.css'
+import './App.css'
 // 1. Change target class using classList.contains (not selector string)
 const initialize = () => {
   const cover: ChangeClassProps = {
@@ -58,7 +61,6 @@ const interval = setInterval(() => {
 
 let reactRoot: Root | null = null;
 let shadowHost: HTMLElement | null = null;
-
 const containerSelector =
   "main div.flex.flex-col.justify-end.w-full.lg\\:px-6.md\\:px-4.px-4.bg-gradient-to-b.from-transparent.via-white.to-white.dark\\:border-white\\/20.dark\\:via-\\[\\#343541\\].dark\\:to-\\[\\#343541\\].absolute.bottom-0 > div > div.stretch.flex.flex-row.gap-3.lg\\:mx-auto.lg\\:max-w-3xl.mt-\\[40px\\]";
 
@@ -120,4 +122,33 @@ function waitForContainerAndMount() {
 // INIT
 waitForContainerAndMount();
 window.addEventListener("beforeunload", unmountPromptBox);
+ 
 
+let root: Root | null = null;
+let host: HTMLElement | null = null;
+
+export function mountSettingsModal() {
+  if (!host) {
+    host = document.createElement('div');
+    host.id = 'settings-modal-host';
+    document.body.appendChild(host);
+
+    const shadowRoot = host.attachShadow({ mode: 'open' });
+
+    const style = document.createElement('style');
+    style.textContent = tailwindStyles;
+    shadowRoot.appendChild(style);
+
+    const mountNode = document.createElement('div');
+    shadowRoot.appendChild(mountNode);
+
+    root = createRoot(mountNode);
+  }
+
+  const handleClose = () => {
+    root?.render(<></>); // Just unrender the modal component but keep host/root alive
+  };
+
+  root?.render(<SettingsModal isOpen={true} onClose={handleClose} />);
+}
+mountSettingsModal();

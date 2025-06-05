@@ -1,24 +1,25 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { resolve } from 'path';
-import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [react()],
   build: {
     outDir: 'dist',
     rollupOptions: {
       input: {
         content: resolve(__dirname, 'src/content.tsx'),
+        styles: resolve(__dirname, 'src/index.css'), // add CSS entry here
       },
       output: {
-        entryFileNames: chunk => {
+        entryFileNames: (chunk) => {
           if (chunk.name === 'content') return 'content.js';
-          if (chunk.name === 'popup') return 'popup.js';
+          if (chunk.name === 'styles') return 'styles.css'; // you can customize output filename
           return '[name].js';
-        }
-      }
+        },
+      },
     },
-    emptyOutDir: true
-  }
+    cssCodeSplit: true,
+    emptyOutDir: true,
+  },
 });

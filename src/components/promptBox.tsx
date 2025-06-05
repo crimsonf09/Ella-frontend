@@ -4,12 +4,12 @@ import { createRoot, type Root } from "react-dom/client";
 import tailwindStyles from './promptBox.css?inline';
 import SettingsModal from './SettingsModal';
 import { generatePrompt } from '.././utils/GeneratePrompt';
+import { mountSettingsModal } from "../content";
 
 
-export default function PromptBox () {
+export default function PromptBox() {
   const [promptAidMessage, setPromptAidMessage] = useState<string>("");
   const [promptAidUserMessages, setPromptAidUserMessages] = useState<string>("");
-  const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [isThinking, setIsThinking] = useState<boolean>(false);
 
   const sendPromptMessage = () => {
@@ -37,7 +37,8 @@ export default function PromptBox () {
   }
 
   const toggleSettingsModal = () => {
-    setIsSettingsOpen(!isSettingsOpen);
+    console.log("setting");
+    mountSettingsModal();
   };
   const clickedGeneratePrompt = async () => {
     setIsThinking(true);
@@ -48,41 +49,15 @@ export default function PromptBox () {
     console.log("rressss");
     console.log(res);
   }
-  useEffect(() => {
-    // Function to mount the SettingsModal directly into the body
-    const mountSettingsModal = () => {
-      const modalRoot = document.createElement('div');
-      modalRoot.id = 'settings-modal-root';
-      document.body.appendChild(modalRoot);
 
-      const modalRootElement = document.getElementById('settings-modal-root');
-      if (modalRootElement) {
-        const modalRoot = createRoot(modalRootElement);
-        modalRoot.render(<SettingsModal isOpen={isSettingsOpen} onClose={toggleSettingsModal} />);
-      }
-    };
-
-    // Function to unmount the SettingsModal and remove the root element
-    const unmountSettingsModal = () => {
-      const modalRootElement = document.getElementById('settings-modal-root');
-      if (modalRootElement) {
-        const modalRoot = createRoot(modalRootElement);
-        modalRoot.unmount();
-        document.body.removeChild(modalRootElement);
-      }
-    };
-
-    // Mount the SettingsModal when the component mounts
-    mountSettingsModal();
-
-    // Unmount the SettingsModal when the component unmounts
-    return () => {
-      unmountSettingsModal();
-    };
-  }, [isSettingsOpen]);
 
   return (
-    <div className="h-[130px] relative flex p-3 flex-col rounded-xl border-black/10 bg-white shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:border-gray-900/50 dark:bg-[#40414F] dark:text-white dark:shadow-[0_0_15px_rgba(0,0,0,0.10)]">
+    <div className="h-[130px] relative flex p-3 flex-col border border-amber-500 rounded-xl  shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:border-gray-900/50 dark:bg-[#40414F] dark:text-white dark:shadow-[0_0_15px_rgba(0,0,0,0.10)]"
+      style={{
+        background: "#d1d5db",
+        boxShadow: "0 8px 16px rgba(0, 0, 0, 0.2)" 
+      }}
+    >
       <div className="w-full max-h-full flex items-start h-max">
         <textarea
           className="w-full min-h-[100px] rounded bg-transparent flex text-black dark:bg-transparent dark:text-white dark:placeholder-gray-500 truncate focus:outline-none whitespace-pre-wrap resize-none"
@@ -102,7 +77,7 @@ export default function PromptBox () {
           className="hover:bg-neutral-200 hover:text-neutral-900 dark:hover:text-neutral-200 w-fit h-fit cursor-pointer rounded-full p-1"
           onClick={clickedGeneratePrompt}
         >
-          <svg fill="#D1D5DB" width="18px" height="18px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+          <svg fill="#6b7280" width="18px" height="18px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
 
             <title />
 
