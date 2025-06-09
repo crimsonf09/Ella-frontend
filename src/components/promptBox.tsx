@@ -1,24 +1,34 @@
 // promptBox.tsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useRef } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import tailwindStyles from './promptBox.css?inline';
 import SettingsModal from './SettingsModal';
 import { generatePrompt } from '.././utils/GeneratePrompt';
 import { mountSettingsModal } from "../content";
 
-
 export default function PromptBox() {
   const [promptAidMessage, setPromptAidMessage] = useState<string>("");
   const [promptAidUserMessages, setPromptAidUserMessages] = useState<string>("");
   const [isThinking, setIsThinking] = useState<boolean>(false);
 
+  // Create a ref to hold the latest promptAidUserMessages
+  const promptAidUserMessagesRef = useRef<string>(promptAidUserMessages);
+
+  // Keep the ref updated whenever promptAidUserMessages changes
+  useEffect(() => {
+    promptAidUserMessagesRef.current = promptAidUserMessages;
+  }, [promptAidUserMessages]);
+
   const sendPromptMessage = () => {
-    console.log("Send prompt message");
+    const message = promptAidUserMessagesRef.current; // always latest value here
+    console.log("Send prompt message", message);
+
     const box = document.getElementById("chat-input") as HTMLTextAreaElement | null;
     if (box) {
-      box.value = promptAidUserMessages;
-      box.dispatchEvent(new Event("input", { bubbles: true })); // Trigger input event to notify React
+      box.value = message;
+      box.dispatchEvent(new Event("input", { bubbles: true })); // Notify React of change
       box.focus();
+
       const sendButton = document.querySelector(
         '#__next > div > div.w-screen.h-screen.flex.overflow-hidden.light > main > div.relative.flex.flex-col.w-full.h-screen.justify-between.bg-white.dark\\:bg-\\[\\#343541\\].overflow-y-auto.overflow-x-hidden > div.flex.flex-col.justify-end.w-full.lg\\:px-6.md\\:px-4.px-4.bg-gradient-to-b.from-transparent.via-white.to-white.dark\\:border-white\\/20.dark\\:via-\\[\\#343541\\].dark\\:to-\\[\\#343541\\].absolute.bottom-0 > div > div > div.relative.flex.flex-grow.flex-col.rounded-xl.border.border-black\\/10.bg-white.shadow-\\[0_0_10px_rgba\\(0\\,0\\,0\\,0\\.10\\)\\].dark\\:border-gray-900\\/50.dark\\:bg-\\[\\#40414F\\].dark\\:text-white.dark\\:shadow-\\[0_0_15px_rgba\\(0\\,0\\,0\\,0\\.10\\)\\] > div.absolute.right-2.bottom-2.rounded-sm.p-1.text-neutral-800.opacity-60.dark\\:bg-opacity-50.dark\\:text-neutral-100.focus\\:outline.focus\\:outline-1.dark\\:focus\\:outline-white.hover\\:bg-neutral-200.hover\\:text-neutral-900.dark\\:hover\\:text-neutral-200 > svg'
       );
@@ -34,31 +44,6 @@ export default function PromptBox() {
     } else {
       console.log("box not found");
     }
-  }
-  useEffect(() => {
-    const box = document.getElementById("chat-input") as HTMLTextAreaElement | null;
-    if (!box) return;
-
-    let typingTimer: ReturnType<typeof setTimeout>;
-
-    const handleInput = () => {
-      clearTimeout(typingTimer);
-      typingTimer = setTimeout(() => {
-        clickedGeneratePrompt(); // Trigger after 3 sec of no typing
-      }, 3000);
-    };
-
-    box.addEventListener("input", handleInput);
-
-    return () => {
-      box.removeEventListener("input", handleInput);
-      clearTimeout(typingTimer);
-    };
-  }, []);
-
-  const toggleSettingsModal = () => {
-    console.log("setting");
-    mountSettingsModal();
   };
   const clickedGeneratePrompt = async () => {
     setIsThinking(true);
@@ -72,7 +57,52 @@ export default function PromptBox() {
     console.log("rressss");
     console.log(res);
     setIsThinking(false);
+    return res;
   }
+  useEffect(() => {
+    const box = document.getElementById("chat-input") as HTMLTextAreaElement | null;
+    if (!box) return;
+
+    let typingTimer: ReturnType<typeof setTimeout>;
+
+    const handleInput = () => {
+      clearTimeout(typingTimer);
+      typingTimer = setTimeout(() => {
+        clickedGeneratePrompt();
+      }, 1500);
+    };
+
+    const handleKeyDown = async (event: KeyboardEvent) => {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        clearTimeout(typingTimer);
+
+        const generated = await clickedGeneratePrompt();
+        if (generated) {
+          console.log("waiting 10 sec...");
+          await new Promise(resolve => setTimeout(resolve, 5000)); // wait for 10 seconds
+          console.log("xxx");
+          setPromptAidMessage(generated);
+          setPromptAidUserMessages(generated);
+          sendPromptMessage();
+        }
+      }
+    };
+    box.addEventListener("input", handleInput);
+    box.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      box.removeEventListener("input", handleInput);
+      box.removeEventListener("keydown", handleKeyDown);
+      clearTimeout(typingTimer);
+    };
+  }, []);
+
+  const toggleSettingsModal = () => {
+    console.log("setting");
+    mountSettingsModal();
+  };
+
 
 
   return (

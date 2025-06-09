@@ -4,7 +4,9 @@ export const generatePrompt = async () => {
     console.error("❌ Chat input box not found.");
     return;
   }
-
+  if (box.value == ""){
+    return;
+  }
   try {
     // // Load system prompt
     // const systemPromptText = await fetch('./prmpt/generalSystemPrompt.txt');
@@ -33,7 +35,7 @@ export const generatePrompt = async () => {
     };
 
     // Send to backend
-    const response = await fetch('http://localhost:3000/generate', {
+    const response = await fetch('https://ellapromptaid.onrender.com/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
