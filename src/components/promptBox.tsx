@@ -43,38 +43,62 @@ export default function PromptBox() {
   const clickedGeneratePrompt = async () => {
     setIsThinking(true);
     const res = await generatePrompt();
-    setIsThinking(false);
     setPromptAidMessage(res);
     setPromptAidUserMessages(res);
+    // delay 20s for testing skeleton
+    // setTimeout(() => {
+    //   setIsThinking(false);
+    // }, 20000);
     console.log("rressss");
     console.log(res);
+    setIsThinking(false);
   }
 
 
   return (
-    <div className="h-[130px] relative flex p-3 flex-col border border-amber-500 rounded-xl  shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:border-gray-900/50 dark:bg-[#40414F] dark:text-white dark:shadow-[0_0_15px_rgba(0,0,0,0.10)]"
+    <div className="h-[130px] relative flex p-3 flex-col border border-amber-500 rounded-xl  shadow-[0_0_10px_rgba(0,0,0,0.10)] "
       style={{
         background: "#d1d5db",
-        boxShadow: "0 8px 16px rgba(0, 0, 0, 0.2)" 
+        boxShadow: "0 8px 16px rgba(0, 0, 0, 0.2)"
       }}
     >
-      <div className="w-full max-h-full flex items-start h-max">
-        <textarea
-          className="w-full min-h-[100px] rounded bg-transparent flex text-black dark:bg-transparent dark:text-white dark:placeholder-gray-500 truncate focus:outline-none whitespace-pre-wrap resize-none"
+      <div className="w-full relative">
+        {/* Text Skeleton Lines */}
+        {isThinking && (
+          <div className="absolute top-0 left-0 w-full h-full z-10 pointer-events-none"
+            style={{
+              background: "#d1d5db"
+            }}
+          >
+            <div className="space-y-2 gap-1 flex-col flex h-full w-full">
+              <div className="h-full w-3/4 bg-gray-500  rounded animate-pulse"></div>
+              <div className="h-full w-full bg-gray-500  rounded animate-pulse"></div>
+              <div className="h-full w-2/3 bg-gray-500  rounded animate-pulse"></div>
+              <div className="h-full w-full bg-gray-500 rounded animate-pulse"></div>
+              <div className="h-full w-2/3 bg-gray-500 rounded animate-pulse"></div>
+            </div>
+          </div>
+        )}
+
+        {/* Actual Textarea */}
+      <textarea
+          className={`w-full min-h-[100px] rounded bg-transparent flex text-black truncate focus:outline-none whitespace-pre-wrap resize-none relative z-0 ${isThinking ? 'text-transparent caret-transparent' : ''
+            }`}
           id="chat-input"
           placeholder={!isThinking ? "Ella" : "Ella . . ."}
           value={promptAidUserMessages}
           style={{ overflow: 'auto' }}
           rows={1}
           onChange={(e) => setPromptAidUserMessages(e.target.value)}
+          disabled={isThinking}
         ></textarea>
       </div>
 
       <div
-        className="absolute flex right-2 gap-2 bottom-2 rounded-sm p-1 text-neutral-800 opacity-60 dark:bg-opacity-50 dark:text-neutral-100 focus:outline dark:focus:outline-white "
+        className="absolute flex right-2 gap-2 bottom-2 rounded-sm p-1 text-neutral-800 opacity-60  "
       >
         <div
-          className="hover:bg-neutral-200 hover:text-neutral-900 dark:hover:text-neutral-200 w-fit h-fit cursor-pointer rounded-full p-1"
+          className="hover:bg-neutral-200 hover:text-neutral-900  w-fit h-fit cursor-pointer rounded-full p-1"
           onClick={clickedGeneratePrompt}
         >
           <svg fill="#6b7280" width="18px" height="18px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
@@ -94,7 +118,7 @@ export default function PromptBox() {
           </svg>
         </div>
         <div
-          className="hover:bg-neutral-200 hover:text-neutral-900 dark:hover:text-neutral-200 w-fit h-fit cursor-pointer rounded-full p-1"
+          className="hover:bg-neutral-200 hover:text-neutral-900  w-fit h-fit cursor-pointer rounded-full p-1"
           onClick={toggleSettingsModal}
         >
           <svg
@@ -103,7 +127,7 @@ export default function PromptBox() {
             height="18"
             viewBox="0 0 18 18"
             fill="currentColor"
-            className="text-gray-500 dark:text-gray-400"
+            className="text-gray-500 "
           >
             <path d="M12.66 6.38L14.48 5.99L15 7.26L13.44 8.27A4.5 4.5 0 0 1 13.44 9.73L13.44 9.73L15 10.74L14.48 12.01L12.66 11.62A4.5 4.5 0 0 1 11.62 12.66L11.62 12.66L12.01 14.48L10.74 15L9.73 13.44A4.5 4.5 0 0 1 8.27 13.44L8.27 13.44L7.26 15L5.99 14.48L6.38 12.66A4.5 4.5 0 0 1 5.34 11.62L5.34 11.62L3.52 12.01L3 10.74L4.56 9.73A4.5 4.5 0 0 1 4.56 8.27L4.56 8.27L3 7.26L3.52 5.99L5.34 6.38A4.5 4.5 0 0 1 6.38 5.34L6.38 5.34L5.99 3.52L7.26 3L8.27 4.56A4.5 4.5 0 0 1 9.73 4.56L9.73 4.56L10.74 3L12.01 3.52L11.62 5.34A4.5 4.5 0 0 1 12.66 6.38ZM11.5 9a2.5 2.5 0 0 0 -5 -0a2.5 2.5 0 0 0 5 -0Z" />
           </svg>
@@ -111,7 +135,7 @@ export default function PromptBox() {
 
         <div
           onClick={() => { sendPromptMessage(); }}
-          className="hover:bg-neutral-200 hover:text-neutral-900 dark:hover:text-neutral-200 w-fit h-fit cursor-pointer rounded-full p-1"
+          className="hover:bg-neutral-200 hover:text-neutral-900 w-fit h-fit cursor-pointer rounded-full p-1"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -122,7 +146,7 @@ export default function PromptBox() {
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="tabler-icon tabler-icon-send text-gray-500 dark:text-gray-400"
+            className="tabler-icon tabler-icon-send text-gray-500"
           >
             <path d="M10 14l11 -11" stroke="none" />
             <path d="M21 3l-6.5 18a.55 .55 0 0 1 -1 0l-3.5 -7l-7 -3.5a.55 .55 0 0 1 0 -1l18 -6.5" stroke="none" />
