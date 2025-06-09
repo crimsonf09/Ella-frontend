@@ -35,6 +35,26 @@ export default function PromptBox() {
       console.log("box not found");
     }
   }
+  useEffect(() => {
+    const box = document.getElementById("chat-input") as HTMLTextAreaElement | null;
+    if (!box) return;
+
+    let typingTimer: ReturnType<typeof setTimeout>;
+
+    const handleInput = () => {
+      clearTimeout(typingTimer);
+      typingTimer = setTimeout(() => {
+        clickedGeneratePrompt(); // Trigger after 3 sec of no typing
+      }, 3000);
+    };
+
+    box.addEventListener("input", handleInput);
+
+    return () => {
+      box.removeEventListener("input", handleInput);
+      clearTimeout(typingTimer);
+    };
+  }, []);
 
   const toggleSettingsModal = () => {
     console.log("setting");
@@ -81,7 +101,7 @@ export default function PromptBox() {
         )}
 
         {/* Actual Textarea */}
-      <textarea
+        <textarea
           className={`w-full min-h-[100px] rounded bg-transparent flex text-black truncate focus:outline-none whitespace-pre-wrap resize-none relative z-0 ${isThinking ? 'text-transparent caret-transparent' : ''
             }`}
           id="chat-input"
