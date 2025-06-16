@@ -18,7 +18,6 @@ export const generatePrompt = async () => {
 
     const profiles = profilesJSON ? JSON.parse(profilesJSON) : {};
     const chosenProfiles: string[] = chosenJSON ? JSON.parse(chosenJSON) : [];
-
     // Construct the `profile` string from chosen profiles
     const profile = chosenProfiles
       .map(name => `${name}: ${profiles[name] || ''}`)
