@@ -6,28 +6,41 @@ interface SettingsModalProps {
 }
 
 const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
-  const [text, setText] = useState('');
-  const [selected, setSelected] = useState('');
-  const [dropdownIsOpen, setDropdownIsOpen] = useState(false);
+  // Profile State
   const [profiles, setProfiles] = useState<Record<string, string>>({});
+  const [choosenProfile, setChoosenProfile] = useState<string[]>([]);
   const [selectedProfileForEdit, setSelectedProfileForEdit] = useState('');
   const [editName, setEditName] = useState('');
   const [editText, setEditText] = useState('');
-  const [choosenProfile, setChoosenProfile] = useState<string[]>([]);
 
+  // JD State (duplicated)
+  const [JDs, setJDs] = useState<Record<string, string>>({});
+  const [choosenJD, setChoosenJD] = useState<string>("");
+  const [selectedJDForEdit, setSelectedJDForEdit] = useState('');
+  const [editJDName, setEditJDName] = useState('');
+  const [editJDText, setEditJDText] = useState('');
+
+  // Modal State
+  const [text, setText] = useState('');
+  const [dropdownIsOpen, setDropdownIsOpen] = useState(false);
+  const [selected, setSelected] = useState('');
+
+  // Load from localStorage
   useEffect(() => {
     const savedProfiles = localStorage.getItem('profiles');
-    if (savedProfiles) {
-      setProfiles(JSON.parse(savedProfiles));
-    }
+    if (savedProfiles) setProfiles(JSON.parse(savedProfiles));
+
+    const savedJDs = localStorage.getItem('JDs');
+    if (savedJDs) setJDs(JSON.parse(savedJDs));
 
     const savedText = localStorage.getItem('settingsText') || '';
     setText(savedText);
 
     const savedChosen = localStorage.getItem('chosenProfiles');
-    if (savedChosen) {
-      setChoosenProfile(JSON.parse(savedChosen));
-    }
+    if (savedChosen) setChoosenProfile(JSON.parse(savedChosen));
+
+    const savedChosenJD = localStorage.getItem('chosenJD');
+    if (savedChosenJD) setChoosenJD(JSON.parse(savedChosenJD));
   }, []);
 
   useEffect(() => {
@@ -37,15 +50,18 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
     };
   }, [isOpen]);
 
+  // Modal close/save
   const handleClose = () => {
     localStorage.setItem('settingsText', text);
     onClose();
   };
-
   const handleSave = () => {
     localStorage.setItem('settingsText', text);
   };
 
+  // -----------------
+  // Profile Handlers
+  // -----------------
   const handleSaveProfile = () => {
     if (editName.trim()) {
       const updated = { ...profiles, [editName]: editText };
@@ -74,43 +90,86 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
   const handleDeleteProfile = (name: string) => {
     const confirm = window.confirm(`Are you sure you want to delete "${name}"?`);
     if (!confirm) return;
-
     const updatedProfiles = { ...profiles };
     delete updatedProfiles[name];
     setProfiles(updatedProfiles);
     localStorage.setItem('profiles', JSON.stringify(updatedProfiles));
-
-    // Also remove from chosen if it's there
+    // Remove from chosen if present
     const updatedChosen = choosenProfile.filter(p => p !== name);
     setChoosenProfile(updatedChosen);
     localStorage.setItem('chosenProfiles', JSON.stringify(updatedChosen));
   };
 
+  // -----------------
+  // JD Handlers (duplicated)
+  // -----------------
+  const handleSaveJD = () => {
+    if (editJDName.trim()) {
+      const updated = { ...JDs, [editJDName]: editJDText };
+      setJDs(updated);
+      localStorage.setItem('JDs', JSON.stringify(updated));
+      setSelectedJDForEdit('');
+      setEditJDName('');
+      setEditJDText('');
+    }
+  };
+
+  const handleAddJD = (name: string) => {
+    setChoosenJD(name);
+    localStorage.setItem('chosenJD', JSON.stringify(name));
+  };
+
+
+  const handleRemoveJD = () => {
+    setChoosenJD("");
+    localStorage.setItem('chosenJD', JSON.stringify(""));
+  };
+
+  const handleDeleteJD = (name: string) => {
+    const confirm = window.confirm(`Are you sure you want to delete JD "${name}"?`);
+    if (!confirm) return;
+    const updatedJDs = { ...JDs };
+    delete updatedJDs[name];
+    setJDs(updatedJDs);
+    localStorage.setItem('JDs', JSON.stringify(updatedJDs));
+    // Remove from chosen if present
+    if (choosenJD === name) {
+      setChoosenJD("");
+      localStorage.setItem('chosenJD', JSON.stringify(""));
+    }
+  };
   if (!isOpen) return null;
 
   return (
     <div
-      className="fixed top-0 left-0 w-screen h-screen flex justify-center items-center z-[1000]"
+      className="fixed top-0 left-0 w-screen h-screen flex justify-center items-center z-[100]"
       style={{
         background: 'rgba(0, 0, 0, 0.5)',
         backdropFilter: 'blur(8px)',
       }}
+      onClick={handleClose}
     >
       <div
+        onClick={e => e.stopPropagation()}
         style={{
+          marginTop: '130px',
+          marginBottom: '50px',
+          height: 'auto',
+          marginLeft: '20px',
+          marginRight: '20px',
           width: '600px',
-          minHeight: '700px',
+          minWidth: '300px',
           background: 'white',
           borderRadius: '10px',
           padding: '20px',
           boxShadow: '0 0 20px rgba(0, 0, 0, 0.15)',
         }}
-        className="flex flex-col gap-4"
+        className="flex flex-col gap-4 z-[1000] overflow-y-scroll"
       >
         <div className="flex w-full justify-between items-center">
           <div className="text-2xl font-bold mr-auto">Settings</div>
           <button
-            className="flex w-6 h-6 justify-center items-center cursor-pointer"
+            className="flex w-6 h-6 justify-center items-center cursor-pointer hover:bg-gray-500"
             style={{ borderRadius: '50%', background: 'transparent' }}
             onClick={handleClose}
             aria-label="Close modal"
@@ -119,47 +178,169 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
           </button>
         </div>
 
-        {/* Dropdown */}
-        <div className="flex gap-4">
-          <div
-            className="relative w-64 text-sm font-medium"
-            style={{
-              background: 'white',
-              boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
-              border: '1px solid gray',
-              borderRadius: '8px',
-            }}
-            onClick={() => setDropdownIsOpen(!dropdownIsOpen)}
-          >
-            <div className="w-full px-4 py-2 text-left">
-              {selected || 'Select Profile'}
-              <span className="float-right">▼</span>
-            </div>
-            {dropdownIsOpen && (
+        {/* --- JD Section (duplicated) --- */}
+        <div>
+          <div className="font-bold text-lg mb-1">JD (Job Descriptions)</div>
+          {/* Chosen JDs */}
+          <div style={{ width: '100%', padding: '10px' }}>
+            {choosenJD && (
               <div
-                className="absolute z-10 w-full mt-2"
+                className="inline-flex items-center px-3 py-1 m-1 text-sm"
                 style={{
-                  background: '#f0f0f0',
-                  borderRadius: '8px',
+                  background: '#B3E5FC',
+                  borderRadius: '20px',
+                  color: '#333',
                 }}
               >
-                {['planner', 'trading desk', 'IT'].map(option => (
-                  <div
-                    key={option}
-                    onClick={() => {
-                      setSelected(option);
-                      setDropdownIsOpen(false);
-                    }}
-                    className="px-4 py-2 cursor-pointer"
-                    style={{ borderBottom: '1px solid #ccc' }}
-                  >
-                    {option}
-                  </div>
-                ))}
+                {choosenJD}
+                <button
+                  onClick={handleRemoveJD}
+                  style={{
+                    marginLeft: '8px',
+                    background: 'transparent',
+                    border: 'none',
+                    color: '#444',
+                    cursor: 'pointer',
+                  }}
+                >
+                  ×
+                </button>
               </div>
             )}
           </div>
+          {/* All JDs */}
+          <div
+            style={{
+              maxHeight: '200px',
+              minHeight: '100px',
+              overflowY: 'auto',
+              padding: '10px',
+              border: '1px solid #ccc',
+              borderRadius: '8px',
+            }}
+            className="flex flex-col gap-2"
+          >
+            {Object.keys(JDs).map(jd => (
+              <div key={jd} className="flex justify-between items-center">
+                <span>{jd}</span>
+                <div className="flex gap-2">
+                  <button
+                    style={{
+                      padding: '4px 8px',
+                      borderRadius: '6px',
+                      border: '1px solid #aaa',
+                      background: '#e0e0e0',
+                      cursor: 'pointer',
+                    }}
+                    onClick={() => {
+                      setSelectedJDForEdit(jd);
+                      setEditJDName(jd);
+                      setEditJDText(JDs[jd]);
+                    }}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    style={{
+                      padding: '4px 8px',
+                      borderRadius: '6px',
+                      border: '1px solid #aaa',
+                      background: choosenJD === jd ? '#bdbdbd' : '#b3e5fc',
+                      cursor: choosenJD === jd ? 'not-allowed' : 'pointer',
+                    }}
+                    onClick={() => handleAddJD(jd)}
+                    disabled={choosenJD === jd}
+                  >
+                    Choose
+                  </button>
+                  <button
+                    style={{
+                      padding: '4px 8px',
+                      borderRadius: '6px',
+                      border: '1px solid #aaa',
+                      background: '#ffcdd2',
+                      cursor: 'pointer',
+                    }}
+                    onClick={() => handleDeleteJD(jd)}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
+            <button
+              onClick={() => {
+                setSelectedJDForEdit('new');
+                setEditJDName('');
+                setEditJDText('');
+              }}
+              style={{
+                marginTop: 'auto',
+                marginBottom: '20px',
+                padding: '6px 12px',
+                background: '#c8e6c9',
+                border: '1px solid #888',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontWeight: 'bold',
+              }}
+            >
+              + New JD
+            </button>
+          </div>
+          {/* JD Editor */}
+          {selectedJDForEdit && (
+            <div
+              style={{
+                padding: '10px',
+                border: '1px solid #aaa',
+                borderRadius: '10px',
+                background: '#fafafa',
+                marginTop: '10px',
+              }}
+              className="flex flex-col gap-2"
+            >
+              <label className="font-semibold text-sm text-gray-800">
+                JD Name:
+              </label>
+              <input
+                value={editJDName}
+                onChange={e => setEditJDName(e.target.value)}
+                className="p-2"
+                style={{ border: '1px solid #ccc', borderRadius: '6px' }}
+              />
 
+              <label className="font-semibold text-sm text-gray-800">
+                JD Detail:
+              </label>
+              <textarea
+                value={editJDText}
+                onChange={e => setEditJDText(e.target.value)}
+                className="p-2"
+                style={{ height: '100px', border: '1px solid #ccc', borderRadius: '6px' }}
+              />
+              <button
+                onClick={handleSaveJD}
+                className="self-end mt-2"
+                style={{
+                  padding: '6px 12px',
+                  background: '#4CAF50',
+                  color: 'white',
+                  borderRadius: '8px',
+                  border: 'none',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                }}
+              >
+                Save JD
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* --- Profile Section (original) --- */}
+        <div>
+          <div className="font-bold text-lg mb-1">Profiles</div>
           {/* Chosen Profiles */}
           <div style={{ width: '100%', padding: '10px' }}>
             {choosenProfile.map(profile => (
@@ -188,134 +369,134 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
               </div>
             ))}
           </div>
-        </div>
-
-        {/* All Profiles */}
-        <div
-          style={{
-            maxHeight: '300px',
-            overflowY: 'auto',
-            padding: '10px',
-            border: '1px solid #ccc',
-            borderRadius: '8px',
-          }}
-          className="flex flex-col gap-2"
-        >
-          {Object.keys(profiles).map(profile => (
-            <div key={profile} className="flex justify-between items-center">
-              <span>{profile}</span>
-              <div className="flex gap-2">
-                <button
-                  style={{
-                    padding: '4px 8px',
-                    borderRadius: '6px',
-                    border: '1px solid #aaa',
-                    background: '#e0e0e0',
-                    cursor: 'pointer',
-                  }}
-                  onClick={() => {
-                    setSelectedProfileForEdit(profile);
-                    setEditName(profile);
-                    setEditText(profiles[profile]);
-                  }}
-                >
-                  Edit
-                </button>
-                <button
-                  style={{
-                    padding: '4px 8px',
-                    borderRadius: '6px',
-                    border: '1px solid #aaa',
-                    background: '#b3e5fc',
-                    cursor: 'pointer',
-                  }}
-                  onClick={() => handleAddProfile(profile)}
-                >
-                  Add
-                </button>
-                <button
-                  style={{
-                    padding: '4px 8px',
-                    borderRadius: '6px',
-                    border: '1px solid #aaa',
-                    background: '#ffcdd2',
-                    cursor: 'pointer',
-                  }}
-                  onClick={() => handleDeleteProfile(profile)}
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          ))}
-          <button
-            onClick={() => {
-              setSelectedProfileForEdit('new');
-              setEditName('');
-              setEditText('');
-            }}
-            style={{
-              marginTop: '10px',
-              padding: '6px 12px',
-              background: '#c8e6c9',
-              border: '1px solid #888',
-              borderRadius: '6px',
-              cursor: 'pointer',
-              fontWeight: 'bold',
-            }}
-          >
-            + New Profile
-          </button>
-        </div>
-
-        {/* Profile Editor */}
-        {selectedProfileForEdit && (
+          {/* All Profiles */}
           <div
             style={{
+              maxHeight: '200px',
+              minHeight: '100px',
+              overflowY: 'auto',
               padding: '10px',
-              border: '1px solid #aaa',
-              borderRadius: '10px',
-              background: '#fafafa',
+              border: '1px solid #ccc',
+              borderRadius: '8px',
             }}
             className="flex flex-col gap-2"
           >
-            <label className="font-semibold text-sm text-gray-800">
-              Profile Name:
-            </label>
-            <input
-              value={editName}
-              onChange={e => setEditName(e.target.value)}
-              className="p-2"
-              style={{ border: '1px solid #ccc', borderRadius: '6px' }}
-            />
-
-            <label className="font-semibold text-sm text-gray-800">
-              Profile Detail:
-            </label>
-            <textarea
-              value={editText}
-              onChange={e => setEditText(e.target.value)}
-              className="p-2"
-              style={{ height: '100px', border: '1px solid #ccc', borderRadius: '6px' }}
-            />
+            {Object.keys(profiles).map(profile => (
+              <div key={profile} className="flex justify-between items-center">
+                <span>{profile}</span>
+                <div className="flex gap-2">
+                  <button
+                    style={{
+                      padding: '4px 8px',
+                      borderRadius: '6px',
+                      border: '1px solid #aaa',
+                      background: '#e0e0e0',
+                      cursor: 'pointer',
+                    }}
+                    onClick={() => {
+                      setSelectedProfileForEdit(profile);
+                      setEditName(profile);
+                      setEditText(profiles[profile]);
+                    }}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    style={{
+                      padding: '4px 8px',
+                      borderRadius: '6px',
+                      border: '1px solid #aaa',
+                      background: '#b3e5fc',
+                      cursor: 'pointer',
+                    }}
+                    onClick={() => handleAddProfile(profile)}
+                  >
+                    Add
+                  </button>
+                  <button
+                    style={{
+                      padding: '4px 8px',
+                      borderRadius: '6px',
+                      border: '1px solid #aaa',
+                      background: '#ffcdd2',
+                      cursor: 'pointer',
+                    }}
+                    onClick={() => handleDeleteProfile(profile)}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
             <button
-              onClick={handleSaveProfile}
-              className="self-end mt-2"
+              onClick={() => {
+                setSelectedProfileForEdit('new');
+                setEditName('');
+                setEditText('');
+              }}
               style={{
+                marginTop: 'auto',
+                marginBottom: '20px',
                 padding: '6px 12px',
-                background: '#4CAF50',
-                color: 'white',
-                borderRadius: '8px',
-                border: 'none',
-                fontWeight: 'bold',
+                background: '#c8e6c9',
+                border: '1px solid #888',
+                borderRadius: '6px',
                 cursor: 'pointer',
+                fontWeight: 'bold',
               }}
             >
-              Save Profile
+              + New Profile
             </button>
           </div>
-        )}
+          {/* Profile Editor */}
+          {selectedProfileForEdit && (
+            <div
+              style={{
+                padding: '10px',
+                border: '1px solid #aaa',
+                borderRadius: '10px',
+                background: '#fafafa',
+                marginTop: '10px',
+              }}
+              className="flex flex-col gap-2"
+            >
+              <label className="font-semibold text-sm text-gray-800">
+                Profile Name:
+              </label>
+              <input
+                value={editName}
+                onChange={e => setEditName(e.target.value)}
+                className="p-2"
+                style={{ border: '1px solid #ccc', borderRadius: '6px' }}
+              />
 
+              <label className="font-semibold text-sm text-gray-800">
+                Profile Detail:
+              </label>
+              <textarea
+                value={editText}
+                onChange={e => setEditText(e.target.value)}
+                className="p-2"
+                style={{ height: '100px', border: '1px solid #ccc', borderRadius: '6px' }}
+              />
+              <button
+                onClick={handleSaveProfile}
+                className="self-end mt-2"
+                style={{
+                  padding: '6px 12px',
+                  background: '#4CAF50',
+                  color: 'white',
+                  borderRadius: '8px',
+                  border: 'none',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                }}
+              >
+                Save Profile
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

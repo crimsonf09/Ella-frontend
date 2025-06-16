@@ -1,15 +1,17 @@
 // promptBox.tsx
-import React, { useState, useEffect,useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import tailwindStyles from './promptBox.css?inline';
 import SettingsModal from './SettingsModal';
 import { generatePrompt } from '.././utils/GeneratePrompt';
 import { mountSettingsModal } from "../content";
 
+
 export default function PromptBox() {
   const [promptAidMessage, setPromptAidMessage] = useState<string>("");
   const [promptAidUserMessages, setPromptAidUserMessages] = useState<string>("");
   const [isThinking, setIsThinking] = useState<boolean>(false);
+  const [lastestMessage, setLastestMessage] = useState<string>("")
 
   // Create a ref to hold the latest promptAidUserMessages
   const promptAidUserMessagesRef = useRef<string>(promptAidUserMessages);
@@ -48,6 +50,10 @@ export default function PromptBox() {
   const clickedGeneratePrompt = async () => {
     setIsThinking(true);
     const res = await generatePrompt();
+    const box = document.getElementById("chat-input") as HTMLTextAreaElement | null;
+    if (box) {
+      setLastestMessage(box.value);
+    }
     setPromptAidMessage(res);
     setPromptAidUserMessages(res);
     // delay 20s for testing skeleton
@@ -63,24 +69,34 @@ export default function PromptBox() {
     const box = document.getElementById("chat-input") as HTMLTextAreaElement | null;
     if (!box) return;
 
-    let typingTimer: ReturnType<typeof setTimeout>;
+    let typingTimer: ReturnType<typeof setTimeout> | undefined;
 
     const handleInput = () => {
+      if (promptAidMessage !== promptAidUserMessages || box.value === lastestMessage) {
+        return;
+      }
       clearTimeout(typingTimer);
       typingTimer = setTimeout(() => {
         clickedGeneratePrompt();
-      }, 1500);
+      }, 2000);
     };
 
     const handleKeyDown = async (event: KeyboardEvent) => {
       if (event.key === "Enter" && !event.shiftKey) {
         event.preventDefault();
         clearTimeout(typingTimer);
-
+        if (!box) {
+          console.log("box not found");
+          return;
+        }
+        if (promptAidMessage !== promptAidUserMessages || box.value === lastestMessage) {
+          sendPromptMessage();
+          return;
+        }
         const generated = await clickedGeneratePrompt();
         if (generated) {
-          console.log("waiting 10 sec...");
-          await new Promise(resolve => setTimeout(resolve, 5000)); // wait for 10 seconds
+          console.log("waiting 4 sec...");
+          await new Promise(resolve => setTimeout(resolve, 4000)); // wait for 4 seconds
           console.log("xxx");
           setPromptAidMessage(generated);
           setPromptAidUserMessages(generated);
@@ -88,6 +104,7 @@ export default function PromptBox() {
         }
       }
     };
+
     box.addEventListener("input", handleInput);
     box.addEventListener("keydown", handleKeyDown);
 
@@ -96,7 +113,7 @@ export default function PromptBox() {
       box.removeEventListener("keydown", handleKeyDown);
       clearTimeout(typingTimer);
     };
-  }, []);
+  }, [promptAidMessage, promptAidUserMessages, lastestMessage]);
 
   const toggleSettingsModal = () => {
     console.log("setting");
