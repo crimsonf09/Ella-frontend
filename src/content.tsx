@@ -2,13 +2,13 @@
 import type { ChangeClassProps } from "./utils/ChangeClass";
 import ChangeClass from "./utils/ChangeClass";
 import { createRoot, type Root } from "react-dom/client";
-import PromptBox from "./components/promptBox"; // Your actual component
-import tailwindStyles from "./App.css?inline"; // Raw text import of Tailwind
+import PromptBox from "./components/promptBox";
+import tailwindStyles from "./App.css?inline";
 import SettingsModal from "./components/SettingsModal";
 import { useState } from "react";
 import './index.css'
 import './App.css'
-// 1. Change target class using classList.contains (not selector string)
+
 const initialize = () => {
   const cover: ChangeClassProps = {
     name: "chatbox",
@@ -25,27 +25,14 @@ const initialize = () => {
   if (targetElement) {
     (targetElement as HTMLElement).style.paddingBottom = "200px";
   }
-  else {
-    console.warn(`Target element "${scroll.name}" not found.`);
-  }
-
-
 };
 
-// 3. Attach listener when the chat input is ready
 const boxCheck = () => {
   const box = document.getElementById("chat-input") as HTMLTextAreaElement | null;
-
   if (!box) {
-    console.log("Waiting for chat input...");
     return false;
   }
-
-  box.addEventListener("input", () => {
-    console.log("User typed:", box.value);
-  });
-
-  console.log("Listener attached");
+  box.addEventListener("input", () => {});
   return true;
 };
 
@@ -55,9 +42,6 @@ const interval = setInterval(() => {
     initialize();
   }
 }, 500);
-
-// 4.injection
-// content-script.tsx (or wherever you run this)
 
 let reactRoot: Root | null = null;
 let shadowHost: HTMLElement | null = null;
@@ -69,7 +53,6 @@ function mountPromptBox() {
 
   const parent = document.querySelector(containerSelector);
   if (!parent) {
-    console.warn("Target container not found.");
     return;
   }
 
@@ -113,16 +96,13 @@ function waitForContainerAndMount() {
 
   observer.observe(document.body, { childList: true, subtree: true });
 
-  // Fallback: also try immediately in case it's already there
   if (document.querySelector(containerSelector)) {
     mountPromptBox();
   }
 }
 
-// INIT
 waitForContainerAndMount();
 window.addEventListener("beforeunload", unmountPromptBox);
- 
 
 let root: Root | null = null;
 let host: HTMLElement | null = null;
@@ -146,7 +126,7 @@ export function mountSettingsModal() {
   }
 
   const handleClose = () => {
-    root?.render(<></>); // Just unrender the modal component but keep host/root alive
+    root?.render(<></>);
   };
 
   root?.render(<SettingsModal isOpen={true} onClose={handleClose} />);
