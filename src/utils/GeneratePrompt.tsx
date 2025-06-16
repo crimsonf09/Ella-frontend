@@ -4,33 +4,43 @@ export const generatePrompt = async () => {
     console.error("❌ Chat input box not found.");
     return;
   }
-  if (box.value == ""){
+  if (box.value === "") {
     return;
   }
   try {
-    // // Load system prompt
-    // const systemPromptText = await fetch('./prmpt/generalSystemPrompt.txt');
-    // const systemPrompt = await systemPromptText.text();
-
     // Load profiles and chosen profiles from localStorage
     const profilesJSON = localStorage.getItem('profiles');
     const chosenJSON = localStorage.getItem('chosenProfiles');
+    const userProfilesJSON = localStorage.getItem('userProfiles');
+    const chosenUserProfileJSON = localStorage.getItem('chosenUserProfile');
 
     const profiles = profilesJSON ? JSON.parse(profilesJSON) : {};
     const chosenProfiles: string[] = chosenJSON ? JSON.parse(chosenJSON) : [];
+    const userProfiles = userProfilesJSON ? JSON.parse(userProfilesJSON) : {};
+    const chosenUserProfile: string = chosenUserProfileJSON ? JSON.parse(chosenUserProfileJSON) : "";
+
     // Construct the `profile` string from chosen profiles
     const profile = chosenProfiles
       .map(name => `${name}: ${profiles[name] || ''}`)
       .join('\n');
 
+    // Construct user profile string (single selection)
+    let userProfileString = "";
+    if (chosenUserProfile && userProfiles[chosenUserProfile]) {
+      userProfileString = `${chosenUserProfile}: ${userProfiles[chosenUserProfile]}`;
+    }
+
     // ✅ Log final profile string
     console.log("Generated profile string:\n" + profile);
 
+    // ✅ Log user profile string
+    console.log("Generated user profile string:\n" + userProfileString);
+    console.log("Question:\n" + box.value)
     // Prepare payload
     const payload = {
       profile,
       Question: box.value,
-      user: "user",
+      user: userProfileString,
     };
 
     // Send to backend
