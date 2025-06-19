@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+import './App.css';
 function App() {
   console.log("App component rendered");
   const [isOn, setIsOn] = useState(false);
