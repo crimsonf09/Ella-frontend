@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import UserProfileSection from './settingComponents/UserProfileSelector';
 import ProfileSection from './settingComponents/ProfileSelector';
+import { loginTest } from '../utils/logintemp';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -59,6 +60,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
             ×
           </button>
         </div>
+        <div style={{width:'40px',height:'40px',background:'red'}} onClick={loginTest}>test</div>
+
         <UserProfileSection />
         <ProfileSection />
       </div>
