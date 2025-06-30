@@ -16,6 +16,7 @@ export async function loginTest() {
     });
 
     const data = await response.json();
+    const token = data.token;
     console.log('Login response:', data);
 
     if (response.ok) {

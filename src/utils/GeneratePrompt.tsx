@@ -1,3 +1,5 @@
+import { useContext } from "react";
+
 export const generatePrompt = async () => {
   const box = document.getElementById("chat-input") as HTMLTextAreaElement | null;
   if (!box || box.value === "") return;
@@ -24,22 +26,25 @@ export const generatePrompt = async () => {
     console.log("Question:\n" + box.value);
 
     const payload = {
-      PPID: 'c50190d6-416e-41cd-8c09-e61270ed679d',
-      TPID: ['59ecf796-57a1-498d-88f5-aacf3c4e92d6', '6bace642-105e-4529-9f31-f24b4521a23f'],
+      PPId: "1e19e9a1-6f78-4e60-9727-93297a201919",
+      TPIds: ["6bace642-105e-4529-9f31-f24b4521a23f", "59ecf796-57a1-498d-88f5-aacf3c4e92d6"],
       role: 'user',
       question: box.value,
     };
-
+    // const token = useContext(AppContext)?.userToken
+    // console.log(`token ${token}`)
     const response = await fetch('http://localhost:3000/api/message/generatePrompt', {
       method: 'POST',
       credentials: 'include', // 🔐 Send the cookie!
       headers: {
         'Content-Type': 'application/json',
+        // 'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify(payload),
     });
 
     const data = await response.json();
+    console.log(data);
     if (data.reply) {
       return data.reply;
     } else {

@@ -13,7 +13,6 @@
     "service_worker": "background.js"
   },
   "host_permissions": [
-    "https://dacasia-chat.hakuneo.com/*",
     "http://localhost:3000/*"
   ],
   "icons": {

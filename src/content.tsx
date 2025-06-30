@@ -5,56 +5,23 @@ import { createRoot, type Root } from "react-dom/client";
 import PromptBox from "./components/promptBox";
 import tailwindStyles from "./App.css?inline";
 import SettingsModal from "./components/SettingsModal";
-import React, { createContext, useContext, useState } from "react";
-import type { ReactNode } from "react";
+import { useState } from "react";
 import './index.css'
 import './App.css'
-
-// --- React Context Setup ---
-
-interface AppContextType {
-  userToken: string | null;
-  setUserToken: (token: string | null) => void;
-}
-
-const AppContext = createContext<AppContextType | undefined>(undefined);
-
-const AppContextProvider = ({ children }: { children: ReactNode }) => {
-  const [userToken, setUserToken] = useState<string | null>(null);
-
-  return (
-    <AppContext.Provider value={{ userToken, setUserToken }}>
-      {children}
-    </AppContext.Provider>
-  );
-};
-
-export const useAppContext = () => {
-  const context = useContext(AppContext);
-  if (!context) {
-    throw new Error("useAppContext must be used within AppContextProvider");
-  }
-  return context;
-};
-
-// --- End React Context Setup ---
-
 
 const initialize = () => {
   const cover: ChangeClassProps = {
     name: "chatbox",
-    selector:
-      '#__next > div > div.w-screen.h-screen.flex.overflow-hidden.light > main > div > div.flex.flex-col.justify-end.w-full.lg\\:px-6.md\\:px-4.px-4.bg-gradient-to-b.from-transparent.via-white.to-white.dark\\:border-white\\/20.dark\\:via-\\[\\#343541\\].dark\\:to-\\[\\#343541\\].absolute.bottom-0 > div > div.stretch.flex.flex-row.gap-3.lg\\:mx-auto.lg\\:max-w-3xl.mt-\\[40px\\]',
-    changedClassName: "stretch flex flex-col gap-3 lg:mx-auto lg:max-w-3xl mt-[40px]",
+    selector: '#__next > div > div.w-screen.h-screen.flex.overflow-hidden.light > main > div > div.flex.flex-col.justify-end.w-full.lg\\:px-6.md\\:px-4.px-4.bg-gradient-to-b.from-transparent.via-white.to-white.dark\\:border-white\\/20.dark\\:via-\\[\\#343541\\].dark\\:to-\\[\\#343541\\].absolute.bottom-0 > div > div.stretch.flex.flex-row.gap-3.lg\\:mx-auto.lg\\:max-w-3xl.mt-\\[40px\\]',
+    changedClassName: "stretch flex flex-col gap-3 lg:mx-auto lg:max-w-3xl mt-[40px]"
   };
   ChangeClass(cover);
   const scroll: ChangeClassProps = {
     name: "scroll",
-    selector:
-      '#__next > div > div.w-screen.h-screen.flex.overflow-hidden.light > main > div > div.w-full.h-full.overflow-x-hidden',
-    changedClassName: "w-full h-full overflow-x-hidden pb-30",
+    selector: '#__next > div > div.w-screen.h-screen.flex.overflow-hidden.light > main > div > div.w-full.h-full.overflow-x-hidden',
+    changedClassName: "w-full h-full overflow-x-hidden pb-30"
   };
-  const targetElement = document.querySelector(scroll.selector);
+  const targetElement = document.querySelector(scroll.selector)
   if (targetElement) {
     (targetElement as HTMLElement).style.paddingBottom = "200px";
   }
@@ -104,11 +71,7 @@ function mountPromptBox() {
   shadowRoot.appendChild(container);
 
   reactRoot = createRoot(container);
-  reactRoot.render(
-    <AppContextProvider>
-      <PromptBox />
-    </AppContextProvider>
-  );
+  reactRoot.render(<PromptBox />);
 }
 
 function unmountPromptBox() {
@@ -146,17 +109,17 @@ let host: HTMLElement | null = null;
 
 export function mountSettingsModal() {
   if (!host) {
-    host = document.createElement("div");
-    host.id = "settings-modal-host";
+    host = document.createElement('div');
+    host.id = 'settings-modal-host';
     document.body.appendChild(host);
 
-    const shadowRoot = host.attachShadow({ mode: "open" });
+    const shadowRoot = host.attachShadow({ mode: 'open' });
 
-    const style = document.createElement("style");
+    const style = document.createElement('style');
     style.textContent = tailwindStyles;
     shadowRoot.appendChild(style);
 
-    const mountNode = document.createElement("div");
+    const mountNode = document.createElement('div');
     shadowRoot.appendChild(mountNode);
 
     root = createRoot(mountNode);
@@ -166,10 +129,6 @@ export function mountSettingsModal() {
     root?.render(<></>);
   };
 
-  root?.render(
-    <AppContextProvider>
-      <SettingsModal isOpen={true} onClose={handleClose} />
-    </AppContextProvider>
-  );
+  root?.render(<SettingsModal isOpen={true} onClose={handleClose} />);
 }
 mountSettingsModal();
