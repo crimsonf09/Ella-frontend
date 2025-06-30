@@ -1,5 +1,10 @@
 import {useState} from React;
-export useAuth = () =>{
-    const useState{isLoggedIn, setIsLoggedIn} = false;
+export function useAuth = () =>{
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const login(){
+        
+    }
     
+
+
 }
