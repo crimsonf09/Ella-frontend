@@ -40,7 +40,7 @@ export async function fetchProfile() {
       method: 'GET',
       credentials: 'include',   // IMPORTANT: sends cookie with request
     });
-
+    console.log(response)
     if (!response.ok) {
       throw new Error('Not authenticated or session expired');
     }

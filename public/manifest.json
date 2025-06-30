@@ -6,10 +6,15 @@
     "scripting",
     "tabs",
     "activeTab",
-    "storage"
+    "storage",
+    "cookies"
   ],
+  "background": {
+    "service_worker": "background.js"
+  },
   "host_permissions": [
-    "https://dacasia-chat.hakuneo.com/*"
+    "https://dacasia-chat.hakuneo.com/*",
+    "http://localhost:3000/*"
   ],
   "icons": {
     "32": "icon.png"
