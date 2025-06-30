@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import UserProfileSection from './settingComponents/UserProfileSelector';
 import ProfileSection from './settingComponents/ProfileSelector';
-import { loginTest } from '../utils/logintemp';
+import { loginTest } from '../api/auth';
 
 interface SettingsModalProps {
   isOpen: boolean;
