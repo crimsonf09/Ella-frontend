@@ -1,4 +1,5 @@
 import { useContext } from "react";
+import { secureFetch } from "../api/secureFetch";
 
 export const generatePrompt = async () => {
   const box = document.getElementById("chat-input") as HTMLTextAreaElement | null;
@@ -31,14 +32,10 @@ export const generatePrompt = async () => {
       role: 'user',
       question: box.value,
     };
-    // const token = useContext(AppContext)?.userToken
-    // console.log(`token ${token}`)
-    const response = await fetch('http://localhost:3000/api/message/generatePrompt', {
+    const response = await secureFetch('http://127.0.0.1:3000/api/message/generatePrompt', {
       method: 'POST',
-      credentials: 'include', // 🔐 Send the cookie!
       headers: {
-        'Content-Type': 'application/json',
-        // 'Authorization': `Bearer ${token}`
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify(payload),
     });
