@@ -38,12 +38,11 @@ export async function loginTest() {
         body: JSON.stringify({ email, password }),
     });
 
-    const data = await res.json();
-    console.log(data);
+    // const data = await res.json();
 
-    const accessToken = res.headers.get('access-token');
-    const refreshToken = res.headers.get('refresh-token');
-
+    const accessToken = await res.headers.get('access-token');
+    const refreshToken = await res.headers.get('refresh-token');
+    console.log(accessToken)
     if (res.ok && accessToken && refreshToken) {
         await setAccessToken(accessToken);
         await setRefreshToken(refreshToken);
@@ -63,7 +62,7 @@ export async function refreshToken() {
         console.warn('No refresh token stored');
         return false;
     }
-
+    console.log('this is refresh')
     const res = await fetch(`${API_BASE}/refresh`, {
         method: 'POST',
         headers: {
@@ -74,8 +73,10 @@ export async function refreshToken() {
     console.log('refresh');
 
     if (res.ok) {
-        const data = await res.json();
-        await setAccessToken(data.accessToken);
+        const accessToken = res.headers.get('access-token')
+        console.log('access get it')
+        console.log(accessToken)
+        await setAccessToken(accessToken);
         return true;
     } else {
         console.warn('Token refresh failed');

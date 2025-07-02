@@ -1,31 +1,32 @@
-import { getAccessToken, refreshToken } from './auth';
+import { getAccessToken, getRefreshToken, refreshToken } from './auth';
 
 export async function secureFetch(input: RequestInfo, init: RequestInit = {}) {
-  // ✅ Get token from chrome.storage.local
-  let token = await getAccessToken();
+  // ✅ Get stored tokens from chrome.storage.local
+  let accessToken = await getAccessToken();
+  let refreshTokenVal = await getRefreshToken();
 
-  // ✅ Build headers with token
+  // ✅ Build headers
   const headers = {
     ...(init.headers || {}),
-    Authorization: `Bearer ${token}`,
+    'access-token': accessToken ?? '',
     'Content-Type': 'application/json',
   };
 
   let response = await fetch(input, {
     ...init,
     headers,
-    // ❌ No cookies used
   });
 
   // 🔁 Retry once if access token is expired
   if (response.status === 401 || response.status === 403) {
-    const refreshed = await refreshToken(); // This will store new accessToken
+    const refreshed =  await refreshToken(); // this should store a new accessToken
 
     if (refreshed) {
-      const retryToken = await getAccessToken();
+      const newAccessToken = await getAccessToken();
+
       const retryHeaders = {
         ...(init.headers || {}),
-        Authorization: `Bearer ${retryToken}`,
+        'access-token': newAccessToken ?? '',
         'Content-Type': 'application/json',
       };
 
@@ -33,7 +34,10 @@ export async function secureFetch(input: RequestInfo, init: RequestInit = {}) {
         ...init,
         headers: retryHeaders,
       });
-      console.log('refreshdone')
+
+      console.log('🔁 Token refreshed and request retried');
+    } else {
+      console.warn('❌ Token refresh failed');
     }
   }
 
