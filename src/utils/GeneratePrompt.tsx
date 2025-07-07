@@ -27,8 +27,8 @@ export const generatePrompt = async () => {
     console.log("Question:\n" + box.value);
 
     const payload = {
-      PPId: "1e19e9a1-6f78-4e60-9727-93297a201919",
-      TPIds: ["6bace642-105e-4529-9f31-f24b4521a23f", "59ecf796-57a1-498d-88f5-aacf3c4e92d6"],
+      PPId: chosenUserProfile,
+      TPIds: chosenProfiles,
       role: 'user',
       question: box.value,
     };
@@ -42,8 +42,9 @@ export const generatePrompt = async () => {
 
     const data = await response.json();
     console.log(data);
-    if (data.reply) {
-      return data.reply;
+    if (data) {
+      
+      return data;
     } else {
       console.error("No response from backend:", data);
       return "Ella not response";
