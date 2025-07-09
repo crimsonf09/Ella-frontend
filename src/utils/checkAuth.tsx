@@ -1,7 +1,8 @@
+import { getAccessToken } from './auth'; // adjust import path if needed
+
 export async function checkLoginStatus() {
   try {
-    const result = await chrome.storage.local.get('EllaToken');
-    const token = result.EllaToken;
+    const token = await getAccessToken();
 
     if (!token) {
       console.log('❌ No token found in local storage');

@@ -1,4 +1,5 @@
 const API_BASE = 'http://127.0.0.1:3000/api';
+
 export async function setAccessToken(token: string | null) {
     await chrome.storage.local.set({ accessToken: token });
 }
@@ -23,13 +24,41 @@ export async function getRefreshToken(): Promise<string | null> {
     });
 }
 
-export async function loginTest() {
-    const email = 'test1@example.com';
-    const password = 'mypassword123';
+// --- REGISTER FUNCTION ---
+export async function register(
+    email: string,
+    firstname: string,
+    middlename: string,
+    lastname: string,
+    nickname: string,
+    department: string,
+    password: string
+) {
+    const res = await fetch(`${API_BASE}/register`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            email,
+            firstname,
+            middlename,
+            lastname,
+            nickname,
+            department,
+            password,
+        }),
+    });
 
-    console.log('loginsss');
-    console.log(`${API_BASE}/login`);
+    if (!res.ok) {
+        const err = await res.text();
+        throw new Error(err || 'Registration failed');
+    }
+    return await res.json();
+}
 
+export async function login(email: string, password: string) {
+    console.log(email)
     const res = await fetch(`${API_BASE}/login`, {
         method: 'POST',
         headers: {
@@ -38,31 +67,32 @@ export async function loginTest() {
         body: JSON.stringify({ email, password }),
     });
 
-    // const data = await res.json();
-
-    const accessToken = await res.headers.get('access-token');
-    const refreshToken = await res.headers.get('refresh-token');
-    console.log(accessToken)
+    const accessToken = res.headers.get('access-token');
+    const refreshToken = res.headers.get('refresh-token');
+    console.log("loggggg")
     if (res.ok && accessToken && refreshToken) {
         await setAccessToken(accessToken);
         await setRefreshToken(refreshToken);
-        console.log('ok');
-        console.log('AccessToken:', accessToken);
-        console.log('RefreshToken:', refreshToken);
+        return true;
     } else {
-        console.log('fail again');
+        let errorMsg = 'Login failed';
+        try {
+            const data = await res.json();
+            if (data && data.error) errorMsg = data.error;
+        } catch (e) {
+            const text = await res.text();
+            if (text) errorMsg = text;
+        }
+        throw new Error(errorMsg);
     }
 }
 
 export async function refreshToken() {
-    console.log('re1');
-
     const refreshToken = await getRefreshToken();
     if (!refreshToken) {
         console.warn('No refresh token stored');
         return false;
     }
-    console.log('this is refresh')
     const res = await fetch(`${API_BASE}/refresh`, {
         method: 'POST',
         headers: {
@@ -70,12 +100,8 @@ export async function refreshToken() {
         },
     });
 
-    console.log('refresh');
-
     if (res.ok) {
-        const accessToken = res.headers.get('access-token')
-        console.log('access get it')
-        console.log(accessToken)
+        const accessToken = res.headers.get('access-token');
         await setAccessToken(accessToken);
         return true;
     } else {
@@ -99,4 +125,8 @@ export async function logout() {
     await setAccessToken(null);
     await setRefreshToken(null);
     console.log('Logged out');
+}
+export async function checkLoginStatus() {
+  const refreshed = await refreshToken();
+  return !!refreshed;
 }
