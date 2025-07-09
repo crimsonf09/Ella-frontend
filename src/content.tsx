@@ -3,11 +3,13 @@ import type { ChangeClassProps } from "./utils/ChangeClass";
 import ChangeClass from "./utils/ChangeClass";
 import { createRoot, type Root } from "react-dom/client";
 import PromptBox from "./components/promptBox";
-import tailwindStyles from "./App.css?inline";
 import SettingsModal from "./components/SettingsModal";
 import { useState } from "react";
-import './index.css'
-import './App.css'
+import { StatusProvider } from "./utils/StatusContext";  // <- import your context provider here
+
+import tailwindStyles from "./App.css?inline";
+import './index.css';
+import './App.css';
 
 const initialize = () => {
   const cover: ChangeClassProps = {
@@ -21,7 +23,7 @@ const initialize = () => {
     selector: '#__next > div > div.w-screen.h-screen.flex.overflow-hidden.light > main > div > div.w-full.h-full.overflow-x-hidden',
     changedClassName: "w-full h-full overflow-x-hidden pb-30"
   };
-  const targetElement = document.querySelector(scroll.selector)
+  const targetElement = document.querySelector(scroll.selector);
   if (targetElement) {
     (targetElement as HTMLElement).style.paddingBottom = "200px";
   }
@@ -71,7 +73,11 @@ function mountPromptBox() {
   shadowRoot.appendChild(container);
 
   reactRoot = createRoot(container);
-  reactRoot.render(<PromptBox />);
+  reactRoot.render(
+    <StatusProvider>
+      <PromptBox />
+    </StatusProvider>
+  );
 }
 
 function unmountPromptBox() {
@@ -129,6 +135,11 @@ export function mountSettingsModal() {
     root?.render(<></>);
   };
 
-  root?.render(<SettingsModal isOpen={true} onClose={handleClose} />);
+  root?.render(
+    <StatusProvider>
+      <SettingsModal isOpen={true} onClose={handleClose} />
+    </StatusProvider>
+  );
 }
+
 mountSettingsModal();

@@ -39,7 +39,9 @@ export const generatePrompt = async () => {
       },
       body: JSON.stringify(payload),
     });
-
+    if(response.status === 401){
+      return "Please Login"
+    }
     const data = await response.json();
     console.log(data);
     if (data) {

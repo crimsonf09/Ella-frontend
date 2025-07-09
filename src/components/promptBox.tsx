@@ -5,6 +5,7 @@ import tailwindStyles from './promptBox.css?inline';
 import SettingsModal from './SettingsModal';
 import { generatePrompt } from '.././utils/GeneratePrompt';
 import { mountSettingsModal } from "../content";
+import { StatusProvider, useStatus } from "../utils/StatusContext";
 
 
 export default function PromptBox() {
@@ -12,10 +13,11 @@ export default function PromptBox() {
   const [promptAidUserMessages, setPromptAidUserMessages] = useState<string>("");
   const [isThinking, setIsThinking] = useState<boolean>(false);
   const [lastestMessage, setLastestMessage] = useState<string>("")
+  const { status, setStatus } = useStatus();
 
   // Create a ref to hold the latest promptAidUserMessages
   const promptAidUserMessagesRef = useRef<string>(promptAidUserMessages);
-
+  setStatus("error")
   // Keep the ref updated whenever promptAidUserMessages changes
   useEffect(() => {
     promptAidUserMessagesRef.current = promptAidUserMessages;
@@ -123,6 +125,7 @@ export default function PromptBox() {
 
 
   return (
+
     <div className="h-[130px] relative flex p-3 flex-col border border-amber-500 rounded-xl  shadow-[0_0_10px_rgba(0,0,0,0.10)] "
       style={{
         background: "#d1d5db",
@@ -160,10 +163,29 @@ export default function PromptBox() {
           disabled={isThinking}
         ></textarea>
       </div>
-
+      <div
+        className="absolute flex left-2 gap-2 bottom-2 rounded-sm p-1 text-neutral-800 opacity-60  "
+      >
+        <div
+          className={`relative h-3 w-3 flex items-center justify-center rounded-full
+    bg-gradient-to-br
+    shadow-inner shadow-black/30
+    ring-1 ring-white/20
+    transition duration-300 ease-in-out
+    ${status === "normal" ? "from-green-400 to-green-700" : ""}
+    ${status === "warning" ? "from-yellow-300 to-yellow-600" : ""}
+    ${status === "error" ? "from-red-400 to-red-700" : ""}
+    ${status === "sleep" ? "from-gray-400 to-gray-600" : ""}
+  `}
+        >
+          <div className="absolute inset-0 rounded-full bg-white/10 blur-sm pointer-events-none"></div>
+          <div className="absolute top-[2px] left-[2px] right-[2px] h-[2px] bg-white/20 rounded-full"></div>
+        </div>
+      </div>
       <div
         className="absolute flex right-2 gap-2 bottom-2 rounded-sm p-1 text-neutral-800 opacity-60  "
       >
+
         <div
           className="hover:bg-neutral-200 hover:text-neutral-900  w-fit h-fit cursor-pointer rounded-full p-1"
           onClick={clickedGeneratePrompt}
@@ -221,5 +243,6 @@ export default function PromptBox() {
         </div>
       </div>
     </div >
+
   );
 };
