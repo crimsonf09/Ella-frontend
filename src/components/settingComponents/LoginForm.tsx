@@ -1,20 +1,31 @@
 import React, { useState } from "react";
 import { login } from "../../api/auth.ts";
 
-const pastelBlue = "#e3f0fc";
-const accent = "#90caf9";
-
-const requiredMark = <span style={{ color: "#e57373", marginLeft: 2 }}>*</span>;
+const requiredMark = <span className="text-red-500 ml-1">*</span>;
 
 const eyeIcon = (show: boolean) => (
-  <span style={{ cursor: "pointer", display: "flex", alignItems: "center" }}>
+  <span className="cursor-pointer flex items-center">
     {show ? (
-      <svg width="22" height="22" fill="none" stroke="#888" strokeWidth="2" viewBox="0 0 24 24">
+      <svg
+        width="22"
+        height="22"
+        fill="none"
+        stroke="#888"
+        strokeWidth="2"
+        viewBox="0 0 24 24"
+      >
         <ellipse cx="12" cy="12" rx="8" ry="5" />
         <circle cx="12" cy="12" r="2.5" />
       </svg>
     ) : (
-      <svg width="22" height="22" fill="none" stroke="#888" strokeWidth="2" viewBox="0 0 24 24">
+      <svg
+        width="22"
+        height="22"
+        fill="none"
+        stroke="#888"
+        strokeWidth="2"
+        viewBox="0 0 24 24"
+      >
         <ellipse cx="12" cy="12" rx="8" ry="5" />
         <line x1="4" y1="20" x2="20" y2="4" />
       </svg>
@@ -22,7 +33,9 @@ const eyeIcon = (show: boolean) => (
   </span>
 );
 
-const LoginForm: React.FC<{ onLoginSuccess?: () => void }> = ({ onLoginSuccess }) => {
+const LoginForm: React.FC<{ onLoginSuccess?: () => void }> = ({
+  onLoginSuccess,
+}) => {
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [loginShowPassword, setLoginShowPassword] = useState(false);
@@ -53,59 +66,36 @@ const LoginForm: React.FC<{ onLoginSuccess?: () => void }> = ({ onLoginSuccess }
   };
 
   return (
-    <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+    <form onSubmit={handleLogin} className="flex flex-col gap-4">
       <div>
-        <label className="font-medium" style={{ color: "#345" }}>
+        <label className="font-medium text-gray-700">
           Email{requiredMark}
         </label>
         <input
           type="email"
           value={loginEmail}
-          onChange={e => setLoginEmail(e.target.value)}
+          onChange={(e) => setLoginEmail(e.target.value)}
           placeholder="Email"
-          style={{
-            width: "100%",
-            padding: "10px 14px",
-            borderRadius: 12,
-            border: `1.5px solid ${accent}`,
-            background: pastelBlue,
-            fontSize: 16,
-            marginTop: 4,
-            outline: "none",
-            transition: "border .2s",
-          }}
+          className="w-full p-2.5 rounded-lg border-2 border-blue-300 bg-blue-50 text-base mt-1 outline-none transition-border focus:border-blue-500"
           required
         />
       </div>
       <div>
-        <label className="font-medium" style={{ color: "#345" }}>
+        <label className="font-medium text-gray-700">
           Password{requiredMark}
         </label>
-        <div style={{ position: "relative" }}>
+        <div className="relative">
           <input
             type={loginShowPassword ? "text" : "password"}
             value={loginPassword}
-            onChange={e => setLoginPassword(e.target.value)}
+            onChange={(e) => setLoginPassword(e.target.value)}
             placeholder="Password"
-            style={{
-              width: "100%",
-              padding: "10px 40px 10px 14px",
-              borderRadius: 12,
-              border: `1.5px solid ${accent}`,
-              background: pastelBlue,
-              fontSize: 16,
-              marginTop: 4,
-              outline: "none",
-            }}
+            className="w-full p-2.5 pr-10 rounded-lg border-2 border-blue-300 bg-blue-50 text-base mt-1 outline-none transition-border focus:border-blue-500"
             required
           />
           <span
-            style={{
-              position: "absolute",
-              right: 10,
-              top: 13,
-            }}
-            onClick={() => setLoginShowPassword(v => !v)}
+            className="absolute right-2.5 top-2.5"
+            onClick={() => setLoginShowPassword((v) => !v)}
             tabIndex={0}
             aria-label="Show password"
             role="button"
@@ -115,24 +105,15 @@ const LoginForm: React.FC<{ onLoginSuccess?: () => void }> = ({ onLoginSuccess }
         </div>
       </div>
       {loginError && (
-        <div className="font-sans" style={{ color: "#e57373", fontSize: 14, marginTop: -10 }}>{loginError}</div>
+        <div className="text-red-500 text-sm mt-[-0.6rem]">
+          {loginError}
+        </div>
       )}
       <button
         type="submit"
-        className="font-bold"
-        style={{
-          background: accent,
-          color: "#fff",
-          border: "none",
-          borderRadius: 14,
-          padding: "10px 0",
-          marginTop: 8,
-          fontSize: 17,
-          boxShadow: "0 2px 8px #90caf930",
-          transition: "background .2s",
-          cursor: loginLoading ? "not-allowed" : "pointer",
-          opacity: loginLoading ? 0.7 : 1,
-        }}
+        className={`font-bold bg-blue-500 text-white border-none rounded-lg py-2.5 mt-2 text-lg shadow-md transition-colors cursor-pointer ${
+          loginLoading ? "opacity-70 cursor-not-allowed" : "hover:bg-blue-600"
+        }`}
         disabled={loginLoading}
       >
         {loginLoading ? "Logging in..." : "Login"}
