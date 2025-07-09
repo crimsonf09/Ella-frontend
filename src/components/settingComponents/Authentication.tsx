@@ -11,38 +11,32 @@ const Authentication: React.FC<{ onLoginSuccess?: () => void }> = ({
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center font-sans"
-      style={{
-        background: `linear-gradient(135deg, #e3f0fc 0%, #edeaff 100%)`, // keep gradient as inline style
-      }}
+      className="min-h-screen flex items-center justify-center font-sans bg-gradient-to-br from-blue-100 to-purple-100"
     >
-      <div
-        className="bg-[#f6f7fa] rounded-[22px] shadow-[0_4px_24px_rgba(80,120,200,0.07)] p-9 w-full max-w-[430px] transition-shadow overflow-hidden"
-      >
-        <div className="flex mb-6">
+      <div className="bg-white rounded-3xl shadow-xl p-12 w-full max-w-md transition-shadow overflow-hidden">
+        <div className="flex mb-8 space-x-4">
           <button
-            className={`flex-1 py-2 rounded-l-[16px] ${
+            className={`flex-1 py-3 rounded-2xl text-lg font-semibold transition-colors cursor-pointer ${
               tab === "login"
-                ? "bg-[#90caf9] text-[#234] font-bold shadow-[0_2px_8px_#90caf930]"
-                : "bg-[#f6f7fa] text-[#888] font-medium"
-            } border-none outline-none transition-colors cursor-pointer`}
+                ? "bg-blue-500 text-white shadow-md"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
             onClick={() => setTab("login")}
           >
             Login
           </button>
           <button
-            className={`flex-1 py-2 rounded-r-[16px] ${
+            className={`flex-1 py-3 rounded-2xl text-lg font-semibold transition-colors cursor-pointer ${
               tab === "register"
-                ? "bg-[#90caf9] text-[#234] font-bold shadow-[0_2px_8px_#90caf930]"
-                : "bg-[#f6f7fa] text-[#888] font-medium"
-            } border-none outline-none transition-colors cursor-pointer`}
+                ? "bg-blue-500 text-white shadow-md"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
             onClick={() => setTab("register")}
           >
             Register
           </button>
         </div>
-        <div className="h-fit pr-2">
-          {/* h-fit makes the height adjust to the content */}
+        <div className="h-fit">
           {tab === "login" ? (
             <LoginForm onLoginSuccess={onLoginSuccess} />
           ) : (

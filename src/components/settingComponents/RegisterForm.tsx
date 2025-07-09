@@ -14,20 +14,31 @@ function checkPasswordStrength(password: string) {
   };
 }
 
-const pastelGreen = "#eafaf1";
-const accent = "#90caf9";
-const accentDark = "#42a5f5";
-const requiredMark = <span style={{ color: "#e57373", marginLeft: 2 }}>*</span>;
+const requiredMark = <span className="text-red-500 ml-1">*</span>;
 
 const eyeIcon = (show: boolean) => (
-  <span style={{ cursor: "pointer", display: "flex", alignItems: "center" }}>
+  <span className="cursor-pointer flex items-center">
     {show ? (
-      <svg width="22" height="22" fill="none" stroke="#888" strokeWidth="2" viewBox="0 0 24 24">
+      <svg
+        width="22"
+        height="22"
+        fill="none"
+        stroke="#888"
+        strokeWidth="2"
+        viewBox="0 0 24 24"
+      >
         <ellipse cx="12" cy="12" rx="8" ry="5" />
         <circle cx="12" cy="12" r="2.5" />
       </svg>
     ) : (
-      <svg width="22" height="22" fill="none" stroke="#888" strokeWidth="2" viewBox="0 0 24 24">
+      <svg
+        width="22"
+        height="22"
+        fill="none"
+        stroke="#888"
+        strokeWidth="2"
+        viewBox="0 0 24 24"
+      >
         <ellipse cx="12" cy="12" rx="8" ry="5" />
         <line x1="4" y1="20" x2="20" y2="4" />
       </svg>
@@ -63,7 +74,6 @@ const RegisterForm: React.FC<{
     setRegSuccess("");
     setRegLoading(true);
 
-    // List of required fields (all except middlename)
     const requiredFields: { field: keyof typeof reg; label: string }[] = [
       { field: "email", label: "Email" },
       { field: "firstname", label: "First Name" },
@@ -122,169 +132,114 @@ const RegisterForm: React.FC<{
   };
 
   return (
-    <form onSubmit={handleRegister} style={{ height:"fit",display: "flex", flexDirection: "column", gap: 16 }}>
-      <div style={{ display: "flex", gap: 8 }}>
-        <div style={{ flex: 1 }}>
-          <label className="font-medium" style={{ color: "#345" }}>
+    <form onSubmit={handleRegister} className="flex flex-col gap-4 h-fit">
+      <div className="flex gap-2">
+        <div className="flex-1">
+          <label className="block font-medium text-gray-700 text-sm">
             First Name{requiredMark}
           </label>
           <input
             type="text"
             value={reg.firstname}
-            onChange={e => setReg(r => ({ ...r, firstname: e.target.value }))}
+            onChange={(e) =>
+              setReg((r) => ({ ...r, firstname: e.target.value }))
+            }
             placeholder="First name"
-            style={{
-              width: "100%",
-              padding: "10px 14px",
-              borderRadius: 12,
-              border: `1.5px solid ${accent}`,
-              background: pastelGreen,
-              fontSize: 16,
-              marginTop: 4,
-              outline: "none",
-            }}
+            className="mt-1 p-2.5 w-full rounded-md border-2 border-blue-300 bg-green-50 text-sm outline-none focus:border-blue-500"
             required
           />
         </div>
-        <div style={{ flex: 1 }}>
-          <label className="font-medium" style={{ color: "#345" }}>
+        <div className="flex-1">
+          <label className="block font-medium text-gray-700 text-sm">
             Middle Name
           </label>
           <input
             type="text"
             value={reg.middlename}
-            onChange={e => setReg(r => ({ ...r, middlename: e.target.value }))}
+            onChange={(e) =>
+              setReg((r) => ({ ...r, middlename: e.target.value }))
+            }
             placeholder="Middle name (optional)"
-            style={{
-              width: "100%",
-              padding: "10px 14px",
-              borderRadius: 12,
-              border: `1.5px solid ${accent}`,
-              background: pastelGreen,
-              fontSize: 16,
-              marginTop: 4,
-              outline: "none",
-            }}
+            className="mt-1 p-2.5 w-full rounded-md border-2 border-blue-300 bg-green-50 text-sm outline-none focus:border-blue-500"
           />
         </div>
       </div>
       <div>
-        <label className="font-medium" style={{ color: "#345" }}>
+        <label className="block font-medium text-gray-700 text-sm">
           Last Name{requiredMark}
         </label>
         <input
           type="text"
           value={reg.lastname}
-          onChange={e => setReg(r => ({ ...r, lastname: e.target.value }))}
+          onChange={(e) =>
+            setReg((r) => ({ ...r, lastname: e.target.value }))
+          }
           placeholder="Last name"
-          style={{
-            width: "100%",
-            padding: "10px 14px",
-            borderRadius: 12,
-            border: `1.5px solid ${accent}`,
-            background: pastelGreen,
-            fontSize: 16,
-            marginTop: 4,
-            outline: "none",
-          }}
+          className="mt-1 p-2.5 w-full rounded-md border-2 border-blue-300 bg-green-50 text-sm outline-none focus:border-blue-500"
           required
         />
       </div>
       <div>
-        <label className="font-medium" style={{ color: "#345" }}>
+        <label className="block font-medium text-gray-700 text-sm">
           Nickname{requiredMark}
         </label>
         <input
           type="text"
           value={reg.nickname}
-          onChange={e => setReg(r => ({ ...r, nickname: e.target.value }))}
+          onChange={(e) =>
+            setReg((r) => ({ ...r, nickname: e.target.value }))
+          }
           placeholder="Nickname"
-          style={{
-            width: "100%",
-            padding: "10px 14px",
-            borderRadius: 12,
-            border: `1.5px solid ${accent}`,
-            background: pastelGreen,
-            fontSize: 16,
-            marginTop: 4,
-            outline: "none",
-          }}
+          className="mt-1 p-2.5 w-full rounded-md border-2 border-blue-300 bg-green-50 text-sm outline-none focus:border-blue-500"
           required
         />
       </div>
       <div>
-        <label className="font-medium" style={{ color: "#345" }}>
+        <label className="block font-medium text-gray-700 text-sm">
           Department{requiredMark}
         </label>
         <input
           type="text"
           value={reg.department}
-          onChange={e => setReg(r => ({ ...r, department: e.target.value }))}
+          onChange={(e) =>
+            setReg((r) => ({ ...r, department: e.target.value }))
+          }
           placeholder="Department"
-          style={{
-            width: "100%",
-            padding: "10px 14px",
-            borderRadius: 12,
-            border: `1.5px solid ${accent}`,
-            background: pastelGreen,
-            fontSize: 16,
-            marginTop: 4,
-            outline: "none",
-          }}
+          className="mt-1 p-2.5 w-full rounded-md border-2 border-blue-300 bg-green-50 text-sm outline-none focus:border-blue-500"
           required
         />
       </div>
       <div>
-        <label className="font-medium" style={{ color: "#345" }}>
+        <label className="block font-medium text-gray-700 text-sm">
           Email{requiredMark}
         </label>
         <input
           type="email"
           value={reg.email}
-          onChange={e => setReg(r => ({ ...r, email: e.target.value }))}
+          onChange={(e) => setReg((r) => ({ ...r, email: e.target.value }))}
           placeholder="Email"
-          style={{
-            width: "100%",
-            padding: "10px 14px",
-            borderRadius: 12,
-            border: `1.5px solid ${accent}`,
-            background: pastelGreen,
-            fontSize: 16,
-            marginTop: 4,
-            outline: "none",
-          }}
+          className="mt-1 p-2.5 w-full rounded-md border-2 border-blue-300 bg-green-50 text-sm outline-none focus:border-blue-500"
           required
         />
       </div>
       <div>
-        <label className="font-medium" style={{ color: "#345" }}>
+        <label className="block font-medium text-gray-700 text-sm">
           Password{requiredMark}
         </label>
-        <div style={{ position: "relative" }}>
+        <div className="relative">
           <input
             type={regShowPassword ? "text" : "password"}
             value={reg.password}
-            onChange={e => setReg(r => ({ ...r, password: e.target.value }))}
+            onChange={(e) =>
+              setReg((r) => ({ ...r, password: e.target.value }))
+            }
             placeholder="Password"
-            style={{
-              width: "100%",
-              padding: "10px 40px 10px 14px",
-              borderRadius: 12,
-              border: `1.5px solid ${accent}`,
-              background: pastelGreen,
-              fontSize: 16,
-              marginTop: 4,
-              outline: "none",
-            }}
+            className="mt-1 p-2.5 w-full rounded-md border-2 border-blue-300 bg-green-50 text-sm outline-none focus:border-blue-500 pr-10"
             required
           />
           <span
-            style={{
-              position: "absolute",
-              right: 10,
-              top: 13,
-            }}
-            onClick={() => setRegShowPassword(v => !v)}
+            className="absolute right-2 top-2.5"
+            onClick={() => setRegShowPassword((v) => !v)}
             tabIndex={0}
             aria-label="Show password"
             role="button"
@@ -294,34 +249,23 @@ const RegisterForm: React.FC<{
         </div>
       </div>
       <div>
-        <label className="font-medium" style={{ color: "#345" }}>
+        <label className="block font-medium text-gray-700 text-sm">
           Confirm Password{requiredMark}
         </label>
-        <div style={{ position: "relative" }}>
+        <div className="relative">
           <input
             type={regShowConfirm ? "text" : "password"}
             value={reg.confirm}
-            onChange={e => setReg(r => ({ ...r, confirm: e.target.value }))}
+            onChange={(e) =>
+              setReg((r) => ({ ...r, confirm: e.target.value }))
+            }
             placeholder="Confirm Password"
-            style={{
-              width: "100%",
-              padding: "10px 40px 10px 14px",
-              borderRadius: 12,
-              border: `1.5px solid ${accent}`,
-              background: pastelGreen,
-              fontSize: 16,
-              marginTop: 4,
-              outline: "none",
-            }}
+            className="mt-1 p-2.5 w-full rounded-md border-2 border-blue-300 bg-green-50 text-sm outline-none focus:border-blue-500 pr-10"
             required
           />
           <span
-            style={{
-              position: "absolute",
-              right: 10,
-              top: 13,
-            }}
-            onClick={() => setRegShowConfirm(v => !v)}
+            className="absolute right-2 top-2.5"
+            onClick={() => setRegShowConfirm((v) => !v)}
             tabIndex={0}
             aria-label="Show password"
             role="button"
@@ -331,42 +275,39 @@ const RegisterForm: React.FC<{
         </div>
       </div>
       {/* Password strength */}
-      <div className="font-sans" style={{ fontSize: 13, color: "#456", marginTop: -10, marginBottom: 2 }}>
-        <div style={{ color: passwordStrength.minLength ? "#4caf50" : "#e57373" }}>
+      <div className="text-xs text-gray-600 mt-[-0.5rem] mb-1">
+        <div
+          className={passwordStrength.minLength ? "text-green-500" : "text-red-500"}
+        >
           • At least 8 characters
         </div>
-        <div style={{ color: passwordStrength.hasUpper ? "#4caf50" : "#e57373" }}>
+        <div
+          className={passwordStrength.hasUpper ? "text-green-500" : "text-red-500"}
+        >
           • Uppercase letter
         </div>
-        <div style={{ color: passwordStrength.hasLower ? "#4caf50" : "#e57373" }}>
+        <div
+          className={passwordStrength.hasLower ? "text-green-500" : "text-red-500"}
+        >
           • Lowercase letter
         </div>
-        <div style={{ color: passwordStrength.hasNumber ? "#4caf50" : "#e57373" }}>
+        <div
+          className={passwordStrength.hasNumber ? "text-green-500" : "text-red-500"}
+        >
           • Number
         </div>
       </div>
-      {regError && (
-        <div className="font-sans" style={{ color: "#e57373", fontSize: 14 }}>{regError}</div>
-      )}
+      {regError && <div className="text-red-500 text-sm">{regError}</div>}
       {regSuccess && (
-        <div className="font-sans" style={{ color: "#43a047", fontSize: 14 }}>{regSuccess}</div>
+        <div className="text-green-600 text-sm">{regSuccess}</div>
       )}
       <button
         type="submit"
-        className="font-bold"
-        style={{
-          background: passwordStrength.isStrong ? accentDark : accent,
-          color: "#fff",
-          border: "none",
-          borderRadius: 14,
-          padding: "10px 0",
-          marginTop: 8,
-          fontSize: 17,
-          boxShadow: "0 2px 8px #90caf930",
-          opacity: regLoading || !passwordStrength.isStrong ? 0.7 : 1,
-          cursor: regLoading || !passwordStrength.isStrong ? "not-allowed" : "pointer",
-          transition: "background .2s, opacity .2s",
-        }}
+        className={`font-bold text-white rounded-md py-2.5 mt-2 text-lg shadow-md transition-colors ${
+          passwordStrength.isStrong
+            ? "bg-blue-500 hover:bg-blue-600"
+            : "bg-blue-300 cursor-not-allowed"
+        } ${regLoading ? "opacity-70 cursor-not-allowed" : ""}`}
         disabled={regLoading || !passwordStrength.isStrong}
       >
         {regLoading ? "Registering..." : "Register"}
