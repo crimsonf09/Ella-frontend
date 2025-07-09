@@ -9,6 +9,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         content: resolve(__dirname, 'src/content.tsx'),
+        background: resolve(__dirname, 'src/background.js'),
         styles: resolve(__dirname, 'src/index.css'), // add CSS entry here
       },
       output: {
