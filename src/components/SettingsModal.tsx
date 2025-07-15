@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import UserProfileSection from './settingComponents/UserProfileSelector';
 import ProfileSection from './settingComponents/ProfileSelector';
-import LoginRegisterPage from './settingComponents/authentication';
+import LoginRegisterPage from './settingComponents/Authentication';
 import { checkLoginStatus, logout } from '../api/auth';
 
 interface SettingsModalProps {

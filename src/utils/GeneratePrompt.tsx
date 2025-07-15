@@ -6,32 +6,26 @@ export const generatePrompt = async () => {
   if (!box || box.value === "") return;
 
   try {
-    const profilesJSON = localStorage.getItem('profiles');
-    const chosenJSON = localStorage.getItem('chosenProfiles');
-    const userProfilesJSON = localStorage.getItem('userProfiles');
-    const chosenUserProfileJSON = localStorage.getItem('chosenUserProfile');
+    // Get IDs from localStorage
+    const chosenProfilesJSON = localStorage.getItem('chosenTaskProfiles'); // should be array of TPId (string[])
+    const chosenUserProfile = localStorage.getItem('chosenUserProfile');   // should be a PPId (string) or null
 
-    const profiles = profilesJSON ? JSON.parse(profilesJSON) : {};
-    const chosenProfiles: string[] = chosenJSON ? JSON.parse(chosenJSON) : [];
-    const userProfiles = userProfilesJSON ? JSON.parse(userProfilesJSON) : {};
-    const chosenUserProfile: string = chosenUserProfileJSON ? JSON.parse(chosenUserProfileJSON) : "";
+    // Parse
+    const TPIds: string[] = chosenProfilesJSON ? JSON.parse(chosenProfilesJSON) : [];
+    const PPId: string = chosenUserProfile ? chosenUserProfile : "";
 
-    const profile = chosenProfiles.map(name => `${name}: ${profiles[name] || ''}`).join('\n');
-    let userProfileString = "";
-    if (chosenUserProfile && userProfiles[chosenUserProfile]) {
-      userProfileString = `${chosenUserProfile}: ${userProfiles[chosenUserProfile]}`;
-    }
-
-    console.log("Generated profile string:\n" + profile);
-    console.log("Generated user profile string:\n" + userProfileString);
+    // Log for debug
+    console.log("Chosen TaskProfiles (TPIds):", TPIds);
+    console.log("Chosen UserProfile (PPId):", PPId);
     console.log("Question:\n" + box.value);
 
     const payload = {
-      PPId: chosenUserProfile,
-      TPIds: chosenProfiles,
+      PPId,
+      TPIds,
       role: 'user',
       question: box.value,
     };
+
     const response = await secureFetch('http://127.0.0.1:3000/api/message/generatePrompt', {
       method: 'POST',
       headers: {
@@ -39,13 +33,14 @@ export const generatePrompt = async () => {
       },
       body: JSON.stringify(payload),
     });
-    if(response.status === 401){
-      return "Please Login"
+
+    if (response.status === 401) {
+      return "Please Login";
     }
     const data = await response.json();
     console.log(data);
+
     if (data) {
-      
       return data;
     } else {
       console.error("No response from backend:", data);

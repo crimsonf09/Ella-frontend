@@ -19,6 +19,7 @@ export async function secureFetch(input: RequestInfo, init: RequestInit = {}) {
   // If unauthorized, try refresh and retry ONCE
   if (response.status === 401 || response.status === 403) {
     const refreshed = await refreshToken();
+    console.log('try refresh token')
     if (refreshed) {
       const newAccessToken = await getAccessToken();
       const retryHeaders = new Headers(init.headers || {});
