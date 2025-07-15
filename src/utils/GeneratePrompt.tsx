@@ -1,4 +1,3 @@
-import { useContext } from "react";
 import { secureFetch } from "../api/secureFetch";
 
 export const generatePrompt = async () => {

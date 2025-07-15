@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 
-type StatusType = "sleep" | "warning" | "error" | "normal" | "context" | "clever";
+type StatusType = "off" | "warning" | "error" | "Rewrite & Correct Mode" | "Contextual Expansion Mode" | "Full Prompt Generator Mode";
 
 type StatusContextType = {
   status: StatusType;

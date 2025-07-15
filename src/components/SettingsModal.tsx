@@ -3,6 +3,7 @@ import UserProfileSection from './settingComponents/UserProfileSelector';
 import ProfileSection from './settingComponents/ProfileSelector';
 import LoginRegisterPage from './settingComponents/Authentication';
 import { checkLoginStatus, logout } from '../api/auth';
+import SettingsPanel from './settingComponents/SettingsPanel';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -74,11 +75,12 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                   Logout
                 </button>
               </div>
-              <div
+              {/* <div
                 className="font-sans bg-[#f6f7fa] rounded-lg p-6 mb-4 min-h-[80px] text-center text-[#888] text-lg border border-[#e3f0fc]"
               >
                 Settings Panel (coming soon)
-              </div>
+              </div> */}
+              <SettingsPanel/>
               {/* User/Profile sections */}
               <UserProfileSection />
               <ProfileSection />
