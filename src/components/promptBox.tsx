@@ -1,82 +1,65 @@
-// promptBox.tsx
 import React, { useState, useEffect, useRef } from "react";
-import { createRoot, type Root } from "react-dom/client";
-import tailwindStyles from './promptBox.css?inline';
-import SettingsModal from './SettingsModal';
-import { generatePrompt } from '.././utils/GeneratePrompt';
+import { useStatus } from "../utils/StatusContext";
+import { generatePrompt } from "../utils/GeneratePrompt";
 import { mountSettingsModal } from "../content";
-import { StatusProvider, useStatus } from "../utils/StatusContext";
-
 
 export default function PromptBox() {
   const [promptAidMessage, setPromptAidMessage] = useState<string>("");
   const [promptAidUserMessages, setPromptAidUserMessages] = useState<string>("");
   const [isThinking, setIsThinking] = useState<boolean>(false);
-  const [lastestMessage, setLastestMessage] = useState<string>("")
+  const [lastestMessage, setLastestMessage] = useState<string>("");
   const { status, setStatus } = useStatus();
-
-  // Create a ref to hold the latest promptAidUserMessages
+  const [mode,setMode] = useState("")
   const promptAidUserMessagesRef = useRef<string>(promptAidUserMessages);
-  setStatus("error")
-  // Keep the ref updated whenever promptAidUserMessages changes
+  useEffect(()=>{
+    setMode(status)
+    console.log('update mode')
+  },[status])
   useEffect(() => {
     promptAidUserMessagesRef.current = promptAidUserMessages;
   }, [promptAidUserMessages]);
 
   const sendPromptMessage = () => {
-    const message = promptAidUserMessagesRef.current; // always latest value here
-    console.log("Send prompt message", message);
-
+    const message = promptAidUserMessagesRef.current;
     const box = document.getElementById("chat-input") as HTMLTextAreaElement | null;
     if (box) {
       box.value = message;
-      box.dispatchEvent(new Event("input", { bubbles: true })); // Notify React of change
+      box.dispatchEvent(new Event("input", { bubbles: true }));
       box.focus();
-
       const sendButton = document.querySelector(
-        '#__next > div > div.w-screen.h-screen.flex.overflow-hidden.light > main > div.relative.flex.flex-col.w-full.h-screen.justify-between.bg-white.dark\\:bg-\\[\\#343541\\].overflow-y-auto.overflow-x-hidden > div.flex.flex-col.justify-end.w-full.lg\\:px-6.md\\:px-4.px-4.bg-gradient-to-b.from-transparent.via-white.to-white.dark\\:border-white\\/20.dark\\:via-\\[\\#343541\\].dark\\:to-\\[\\#343541\\].absolute.bottom-0 > div > div > div.relative.flex.flex-grow.flex-col.rounded-xl.border.border-black\\/10.bg-white.shadow-\\[0_0_10px_rgba\\(0\\,0\\,0\\,0\\.10\\)\\].dark\\:border-gray-900\\/50.dark\\:bg-\\[\\#40414F\\].dark\\:text-white.dark\\:shadow-\\[0_0_15px_rgba\\(0\\,0\\,0\\,0\\.10\\)\\] > div.absolute.right-2.bottom-2.rounded-sm.p-1.text-neutral-800.opacity-60.dark\\:bg-opacity-50.dark\\:text-neutral-100.focus\\:outline.focus\\:outline-1.dark\\:focus\\:outline-white.hover\\:bg-neutral-200.hover\\:text-neutral-900.dark\\:hover\\:text-neutral-200 > svg'
+        '#__next ... svg' // your selector here
       );
-
       if (sendButton) {
         (sendButton as SVGElement).dispatchEvent(new MouseEvent('click', { bubbles: true }));
-        console.log("Button clicked!");
         setPromptAidUserMessages("");
         setPromptAidMessage("");
-      } else {
-        console.log("Button not found");
       }
-    } else {
-      console.log("box not found");
     }
   };
+
   const clickedGeneratePrompt = async () => {
     setIsThinking(true);
-    const res = await generatePrompt();
+    const res = await generatePrompt(status);
+    if (res === "Ella is dead") {
+      setStatus('error');
+    }
     const box = document.getElementById("chat-input") as HTMLTextAreaElement | null;
     if (box) {
       setLastestMessage(box.value);
     }
     setPromptAidMessage(res);
     setPromptAidUserMessages(res);
-    // delay 20s for testing skeleton
-    // setTimeout(() => {
-    //   setIsThinking(false);
-    // }, 20000);
-    console.log("rressss");
-    console.log(res);
     setIsThinking(false);
     return res;
-  }
+  };
+
   useEffect(() => {
     const box = document.getElementById("chat-input") as HTMLTextAreaElement | null;
     if (!box) return;
-
     let typingTimer: ReturnType<typeof setTimeout> | undefined;
 
     const handleInput = () => {
-      if (promptAidMessage !== promptAidUserMessages || box.value === lastestMessage) {
-        return;
-      }
+      if (promptAidMessage !== promptAidUserMessages || box.value === lastestMessage) return;
       clearTimeout(typingTimer);
       typingTimer = setTimeout(() => {
         clickedGeneratePrompt();
@@ -87,19 +70,14 @@ export default function PromptBox() {
       if (event.key === "Enter" && !event.shiftKey) {
         event.preventDefault();
         clearTimeout(typingTimer);
-        if (!box) {
-          console.log("box not found");
-          return;
-        }
+        if (!box) return;
         if (promptAidMessage !== promptAidUserMessages || box.value === lastestMessage) {
           sendPromptMessage();
           return;
         }
         const generated = await clickedGeneratePrompt();
         if (generated) {
-          console.log("waiting 4 sec...");
-          await new Promise(resolve => setTimeout(resolve, 4000)); // wait for 4 seconds
-          console.log("xxx");
+          await new Promise(resolve => setTimeout(resolve, 4000));
           setPromptAidMessage(generated);
           setPromptAidUserMessages(generated);
           sendPromptMessage();
@@ -118,10 +96,19 @@ export default function PromptBox() {
   }, [promptAidMessage, promptAidUserMessages, lastestMessage]);
 
   const toggleSettingsModal = () => {
-    console.log("setting");
     mountSettingsModal();
   };
 
+  // Status color gradient map (inline)
+  const statusGradient: Record<string, string> = {
+    normal: "from-green-400 to-green-700",
+    warning: "from-yellow-300 to-yellow-600",
+    error: "from-red-400 to-red-700",
+    off: "from-gray-400 to-gray-600",
+    "Rewrite & Correct Mode": "from-green-300 to-green-600",
+    "Contextual Expansion Mode": "from-blue-300 to-blue-600",
+    "Full Prompt Generator Mode": "from-fuchsia-400 to-fuchsia-700",
+  };
 
 
   return (
@@ -172,10 +159,16 @@ export default function PromptBox() {
     shadow-inner shadow-black/30
     ring-1 ring-white/20
     transition duration-300 ease-in-out
-    ${status === "normal" ? "from-green-400 to-green-700" : ""}
-    ${status === "warning" ? "from-yellow-300 to-yellow-600" : ""}
-    ${status === "error" ? "from-red-400 to-red-700" : ""}
-    ${status === "sleep" ? "from-gray-400 to-gray-600" : ""}
+    ${{
+              normal: "from-green-400 to-green-700",
+              warning: "from-yellow-300 to-yellow-600",
+              error: "from-red-400 to-red-700",
+              off: "from-gray-400 to-gray-600",
+              "Rewrite & Correct Mode": "from-green-300 to-green-600",
+              "Contextual Expansion Mode": "from-blue-300 to-blue-600",
+              "Full Prompt Generator Mode": "from-fuchsia-400 to-fuchsia-700",
+            }[status] || ""
+            }
   `}
         >
           <div className="absolute inset-0 rounded-full bg-white/10 blur-sm pointer-events-none"></div>
