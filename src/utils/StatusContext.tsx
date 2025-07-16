@@ -1,6 +1,12 @@
-import { createContext, useContext, useState, type ReactNode } from "react";
+import React, { createContext, useContext, useState, useEffect, type ReactNode } from "react";
 
-type StatusType = "off" | "warning" | "error" | "Rewrite & Correct Mode" | "Contextual Expansion Mode" | "Full Prompt Generator Mode";
+export type StatusType =
+  | "off"
+  | "warning"
+  | "error"
+  | "Rewrite & Correct Mode"
+  | "Contextual Expansion Mode"
+  | "Full Prompt Generator Mode";
 
 type StatusContextType = {
   status: StatusType;
@@ -10,7 +16,20 @@ type StatusContextType = {
 const StatusContext = createContext<StatusContextType | undefined>(undefined);
 
 export const StatusProvider = ({ children }: { children: ReactNode }) => {
-  const [status, setStatus] = useState<StatusType>("warning");
+  const [status, setStatusState] = useState<StatusType>("off");
+
+  // Broadcast status change to all windows
+  const setStatus = (s: StatusType) => {
+    setStatusState(s);
+    window.dispatchEvent(new CustomEvent("status-change", { detail: s }));
+  };
+
+  // Listen for status changes from other trees
+  useEffect(() => {
+    const handler = (e: any) => setStatusState(e.detail);
+    window.addEventListener("status-change", handler as EventListener);
+    return () => window.removeEventListener("status-change", handler as EventListener);
+  }, []);
 
   return (
     <StatusContext.Provider value={{ status, setStatus }}>
@@ -18,11 +37,9 @@ export const StatusProvider = ({ children }: { children: ReactNode }) => {
     </StatusContext.Provider>
   );
 };
+
 export const useStatus = () => {
   const context = useContext(StatusContext);
-  if (!context) {
-    throw new Error("useStatus must be used within a StatusProvider");
-  }
+  if (!context) throw new Error("useStatus must be used within a StatusProvider");
   return context;
 };
-

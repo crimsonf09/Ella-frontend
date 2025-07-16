@@ -72,6 +72,7 @@ const SettingsPanel: React.FC = () => {
     localStorage.setItem(MODE_STORAGE_KEY, selectedMode);
     if (status !== "error" && status !== "warning") {
       setStatus(selectedMode);
+      console.log(selectedMode)
     }
     // eslint-disable-next-line
   }, [selectedMode]);

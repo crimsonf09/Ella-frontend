@@ -9,9 +9,12 @@ export default function PromptBox() {
   const [isThinking, setIsThinking] = useState<boolean>(false);
   const [lastestMessage, setLastestMessage] = useState<string>("");
   const { status, setStatus } = useStatus();
-
+  const [mode,setMode] = useState("")
   const promptAidUserMessagesRef = useRef<string>(promptAidUserMessages);
-
+  useEffect(()=>{
+    setMode(status)
+    console.log('update mode')
+  },[status])
   useEffect(() => {
     promptAidUserMessagesRef.current = promptAidUserMessages;
   }, [promptAidUserMessages]);
