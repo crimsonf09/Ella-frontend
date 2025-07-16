@@ -1,6 +1,7 @@
 import { secureFetch } from "../api/secureFetch";
+import { useStatus } from "./StatusContext";
 
-export const generatePrompt = async () => {
+export const generatePrompt = async (status:String) => {
   const box = document.getElementById("chat-input") as HTMLTextAreaElement | null;
   if (!box || box.value === "") return;
 
@@ -23,6 +24,7 @@ export const generatePrompt = async () => {
       TPIds,
       role: 'user',
       question: box.value,
+      type:status
     };
 
     const response = await secureFetch('http://127.0.0.1:3000/api/message/generatePrompt', {

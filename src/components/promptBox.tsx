@@ -39,7 +39,7 @@ export default function PromptBox() {
 
   const clickedGeneratePrompt = async () => {
     setIsThinking(true);
-    const res = await generatePrompt();
+    const res = await generatePrompt(status);
     if (res === "Ella is dead") {
       setStatus('error');
     }
