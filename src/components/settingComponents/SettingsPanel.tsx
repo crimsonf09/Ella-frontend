@@ -1,13 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useStatus } from "../../utils/StatusContext"; // Adjust path as needed
+import { useStatus,type StatusType } from "../../utils/StatusContext"; // Adjust path as needed
 
-type StatusType =
-  | "off"
-  | "warning"
-  | "error"
-  | "Rewrite & Correct Mode"
-  | "Contextual Expansion Mode"
-  | "Full Prompt Generator Mode";
 
 type ModeOption = {
   value: StatusType;
@@ -21,8 +14,8 @@ type ModeOption = {
 const MODES: ModeOption[] = [
   {
     value: "off",
-    label: "Rewrite & Correct Mode",
-    description: "Fix grammar and paraphrase sentences.",
+    label: "Turn Off",
+    description: "Close",
     ring: "ring-gray-400",
     bg: "bg-gray-100",
     text: "text-gray-600",
