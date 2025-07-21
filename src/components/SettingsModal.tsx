@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react';
 import UserProfileSection from './settingComponents/UserProfileSelector';
 import ProfileSection from './settingComponents/ProfileSelector';
 import LoginRegisterPage from './settingComponents/Authentication';
-import { checkLoginStatus, logout } from '../api/auth';
+import { checkLoginStatus } from '../utils/checkAuth';
+import { logout } from '../api/auth';
 import SettingsPanel from './settingComponents/SettingsPanel';
+import { useStatus,type StatusType } from "../utils/StatusContext"; // Adjust path as needed
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -13,11 +15,12 @@ interface SettingsModalProps {
 const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
   const [checking, setChecking] = useState(true);
   const [loggedIn, setLoggedIn] = useState(false);
+  const { setStatus } = useStatus();
 
   const refreshLoginStatus = () => {
     setChecking(true);
-    checkLoginStatus().then(isLoggedIn => {
-      setLoggedIn(isLoggedIn);
+    checkLoginStatus(setStatus).then(isLoggedIn => {
+      setLoggedIn(isLoggedIn.loggedIn);
       setChecking(false);
     });
   };

@@ -1,10 +1,19 @@
+import { stat } from "fs";
 import { secureFetch } from "../api/secureFetch";
 import { useStatus } from "./StatusContext";
 
 export const generatePrompt = async (status:String) => {
   const box = document.getElementById("chat-input") as HTMLTextAreaElement | null;
   if (!box || box.value === "") return;
-
+  if( status === "off") {
+    return "Ella Off";
+  }
+  if(status === "error") {
+    return "Ella is dead";
+  }
+  if(status === "warning") {
+    return "Please Login";
+  }
   try {
     // Get IDs from localStorage
     const chosenProfilesJSON = localStorage.getItem('chosenTaskProfiles'); // should be array of TPId (string[])

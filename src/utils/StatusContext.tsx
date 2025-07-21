@@ -1,7 +1,14 @@
 import React, { createContext, useContext, useState, useEffect, type ReactNode } from "react";
+export type StatusType =
+  | "off"
+  | "warning"
+  | "error"
+  | "Rewrite & Correct Mode"
+  | "Contextual Expansion Mode"
+  | "Full Prompt Generator Mode";
 
 // Change from specific string union to general string type
-export type StatusType = string;
+// export type StatusType = string;
 
 type StatusContextType = {
   status: StatusType;
