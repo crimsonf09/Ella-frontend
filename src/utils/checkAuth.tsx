@@ -1,3 +1,5 @@
+import { getAccessToken } from "../api/auth";
+import { secureFetch } from "../api/secureFetch";
 import type { StatusType } from "./StatusContext";
 
 export async function checkLoginStatus(setStatus: (s: StatusType) => void) {
@@ -17,9 +19,8 @@ export async function checkLoginStatus(setStatus: (s: StatusType) => void) {
   }
 
   try {
-    const result = await chrome.storage.local.get('EllaToken');
-    const token = result.EllaToken;
-
+    const token = getAccessToken();
+    console.log(token);
     if (!token) {
       console.log('❌ No token found in local storage');
       setStatus('warning');
@@ -28,16 +29,23 @@ export async function checkLoginStatus(setStatus: (s: StatusType) => void) {
 
     let res: Response;
     try {
-      res = await timeoutPromise(
-        fetch('http://localhost:3000/api/profile', {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        }),
-        3000
-      );
+      // res = await timeoutPromise(
+      //   fetch('http://localhost:3000/api/profile', {
+      //     method: 'GET',
+      //     headers: {
+      //       Authorization: `Bearer ${token}`,
+      //       'Content-Type': 'application/json'
+      //     }
+      //   }),
+      //   3000
+      // );
+      
+      res = await secureFetch('http://127.0.0.1:3000/api/profile', {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+          });
     } catch (err) {
       // This handles fetch timeout or network error
       console.error('❌ Error or timeout during profile fetch:', err);

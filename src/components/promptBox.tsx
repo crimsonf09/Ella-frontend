@@ -9,12 +9,12 @@ export default function PromptBox() {
   const [isThinking, setIsThinking] = useState<boolean>(false);
   const [lastestMessage, setLastestMessage] = useState<string>("");
   const { status, setStatus } = useStatus();
-  const [mode,setMode] = useState("")
+  const [mode, setMode] = useState("")
   const promptAidUserMessagesRef = useRef<string>(promptAidUserMessages);
-  useEffect(()=>{
+  useEffect(() => {
     setMode(status)
     console.log('update mode')
-  },[status])
+  }, [status])
   useEffect(() => {
     promptAidUserMessagesRef.current = promptAidUserMessages;
   }, [promptAidUserMessages]);
@@ -26,9 +26,8 @@ export default function PromptBox() {
       box.value = message;
       box.dispatchEvent(new Event("input", { bubbles: true }));
       box.focus();
-      const sendButton = document.querySelector(
-        '#__next ... svg' // your selector here
-      );
+      const sendButton = document.querySelector('svg[viewBox="0 0 24 24"][class="tabler-icon tabler-icon-send "]');
+
       if (sendButton) {
         (sendButton as SVGElement).dispatchEvent(new MouseEvent('click', { bubbles: true }));
         setPromptAidUserMessages("");
@@ -36,6 +35,12 @@ export default function PromptBox() {
       }
     }
   };
+  const sendMessage = () => {
+    const sendButton = document.querySelector('svg[viewBox="0 0 24 24"][class="tabler-icon tabler-icon-send "]');
+    (sendButton as SVGElement).dispatchEvent(new MouseEvent('click', { bubbles: true }));
+  }
+
+
 
   const clickedGeneratePrompt = async () => {
     setIsThinking(true);
@@ -67,9 +72,10 @@ export default function PromptBox() {
     };
 
     const handleKeyDown = async (event: KeyboardEvent) => {
-      if (event.key === "Enter" && !event.shiftKey) {
+      if (event.key === "Enter" && (event.ctrlKey || event.metaKey) && !event.shiftKey) {
         event.preventDefault();
         clearTimeout(typingTimer);
+        console.log('ctrl enter')
         if (!box) return;
         if (promptAidMessage !== promptAidUserMessages || box.value === lastestMessage) {
           sendPromptMessage();
@@ -82,6 +88,11 @@ export default function PromptBox() {
           setPromptAidUserMessages(generated);
           sendPromptMessage();
         }
+      } else if (event.key === "Enter" && !event.shiftKey) {
+        console.log('norm enter')
+        event.preventDefault();
+        clearTimeout(typingTimer);
+        sendMessage();
       }
     };
 
