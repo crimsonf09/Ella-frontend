@@ -40,7 +40,7 @@ export async function checkLoginStatus(setStatus: (s: StatusType) => void) {
       //   3000
       // );
       
-      res = await secureFetch('http://127.0.0.1:3000/api/profile', {
+      res = await secureFetch(`${ import.meta.env.VITE_API_URL}/profile`, {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json'

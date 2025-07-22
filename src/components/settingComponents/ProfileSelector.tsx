@@ -16,7 +16,7 @@ export interface TaskProfile extends TaskProfileSummary {
 }
 
 // ---- API helpers ----
-const BASE_URL: string = 'http://127.0.0.1:3000/api';
+const BASE_URL=  import.meta.env.VITE_API_URL ;
 
 async function fetchTaskProfiles(): Promise<TaskProfileSummary[]> {
   const res: Response = await secureFetch(`${BASE_URL}/taskProfile/getAllTaskProfile`);

@@ -1,4 +1,4 @@
-const API_BASE = 'http://127.0.0.1:3000/api';
+const API_BASE =  import.meta.env.VITE_API_URL;
 
 export async function setAccessToken(token: string | null) {
     await chrome.storage.local.set({ accessToken: token });
@@ -59,6 +59,8 @@ export async function register(
 
 export async function login(email: string, password: string) {
     console.log(email)
+    console.log( import.meta.env.VITE_API_URL)
+    console.log({API_BASE})
     const res = await fetch(`${API_BASE}/login`, {
         method: 'POST',
         headers: {

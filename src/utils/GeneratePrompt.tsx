@@ -36,7 +36,7 @@ export const generatePrompt = async (status:String) => {
       type:status
     };
 
-    const response = await secureFetch('http://127.0.0.1:3000/api/message/generatePrompt', {
+    const response = await secureFetch(`${import.meta.env.VITE_API_URL}/message/generatePrompt`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
