@@ -1,9 +1,9 @@
 import {useState} from 'react';
-import {loginTest, logout} from '../api/auth.ts'
+import {login, logout} from '../api/auth.ts'
 export function useAuth (){
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const login = async() =>{
-        const result = await loginTest();
+        const result = await login();
         setIsLoggedIn(typeof result === 'boolean' ? result : false);
     }
     const handleLogout = async() =>{
