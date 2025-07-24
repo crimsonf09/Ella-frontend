@@ -142,11 +142,12 @@ export default function PromptBox() {
         boxShadow: "0 8px 16px rgba(0, 0, 0, 0.2)"
       }}
     >
+      {(mode !== "off" && mode !== "Rewrite & Correct Mode")&&
       <MessageClassSelector 
         currentClass={messageClass}
         onClassChange={handleMessageClassChange}
       />
-
+      }
       <div className="w-full relative flex-1">
         {/* Text Skeleton Lines */}
         {isThinking && (
@@ -155,7 +156,7 @@ export default function PromptBox() {
               background: "#d1d5db"
             }}
           >
-            <div className="space-y-2 gap-1 flex-col flex h-full w-full">
+            <div className="space-y-2 gap-1 flex-col flex h-full w-full pb-4">
               <div className="h-full w-3/4 bg-gray-500 rounded animate-pulse"></div>
               <div className="h-full w-full bg-gray-500 rounded animate-pulse"></div>
               <div className="h-full w-2/3 bg-gray-500 rounded animate-pulse"></div>

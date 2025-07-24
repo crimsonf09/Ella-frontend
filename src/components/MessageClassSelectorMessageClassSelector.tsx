@@ -4,17 +4,17 @@ import React, { useRef } from 'react';
 const MESSAGESCLASS = [
   { id: "auto", name: "Auto Mode (Smart)", icon: "✨" },
   { id: "general", name: "General Mode", icon: "🌐" },
-  { id: "normal", name: "Normal Mode", icon: "🔵" },
-  { id: "Rewrite & Correct Mode", name: "Rewrite & Correct", icon: "✏️" },
-  { id: "Contextual Expansion Mode", name: "Contextual Expansion", icon: "📝" },
-  { id: "Full Prompt Generator Mode", name: "Full Prompt Generator", icon: "🚀" },
-  { id: "creative", name: "Creative Mode", icon: "🎨" },
-  { id: "analytical", name: "Analytical Mode", icon: "📊" },
-  { id: "technical", name: "Technical Mode", icon: "⚙️" },
-  { id: "casual", name: "Casual Mode", icon: "💬" },
-  { id: "professional", name: "Professional Mode", icon: "💼" },
-  { id: "debug", name: "Debug Mode", icon: "🐛" }
+  { id: "research_insight", name: "Research Insight", icon: "🔬" },
+  { id: "strategy_planning", name: "Strategy Planning", icon: "🧭" },
+  { id: "goal_breakdown", name: "Goal Breakdown", icon: "🎯" },
+  { id: "creative_idea_generation", name: "Creative Idea Generation", icon: "💡" },
+  { id: "judgment_decision", name: "Judgment Decision", icon: "⚖️" },
+  { id: "judgment_hr_decision", name: "HR Judgment Decision", icon: "👥" },
+  { id: "idea_validation", name: "Idea Validation", icon: "✅" },
+  { id: "paraphrase", name: "Paraphrase", icon: "🔁" },
+  { id: "candidate_screening", name: "Candidate Screening", icon: "📋" }
 ];
+
 
 interface MessageClassSelectorProps {
   currentClass: string;
