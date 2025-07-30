@@ -2,7 +2,7 @@ import { stat } from "fs";
 import { secureFetch } from "../api/secureFetch";
 import { useStatus } from "./StatusContext";
 
-export const generatePrompt = async (status:String) => {
+export const generatePrompt = async (status:String,messageClass:String) => {
   const box = document.getElementById("chat-input") as HTMLTextAreaElement | null;
   if (!box || box.value === "") return;
   if( status === "off") {
@@ -33,7 +33,8 @@ export const generatePrompt = async (status:String) => {
       TPIds,
       role: 'user',
       question: box.value,
-      type:status
+      type:status,
+      messageClass: messageClass,
     };
 
     const response = await secureFetch(`${import.meta.env.VITE_API_URL}/message/generatePrompt`, {
